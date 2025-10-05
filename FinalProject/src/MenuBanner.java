@@ -7,7 +7,7 @@ public class MenuBanner extends FlowPane {
 	/**
 	 * Builds menu on top of every page
 	 */
-	public MenuBanner() {
+	public MenuBanner(MainPage page) {
 		Button homeButton = new Button("Home");
 		Button settingsButton = new Button("Settings");
 		Button addInventoryButton = new Button("Add Inventory Item");
@@ -21,5 +21,22 @@ public class MenuBanner extends FlowPane {
 				logoutButton
 				);
 		
+		homeButton.setOnAction(event -> {
+			System.out.println("Home page");
+			page.setCenter(new WelcomePage());
+		});
+		
+		warehouseReceiptButton.setOnAction(event -> {
+			System.out.println("Transferring to warehouse receipt page");
+			WarehouseReceipt warehouseReceipt = new WarehouseReceipt();
+			page.setCenter(warehouseReceipt);
+		});
+		
+		logoutButton.setOnAction(event -> {
+			System.out.println("Logging out");
+			page.setTop(null);
+			LoginSection loginSection = new LoginSection(page);
+			page.setCenter(loginSection);
+		});
 	}
 }

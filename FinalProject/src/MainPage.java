@@ -10,10 +10,8 @@ public class MainPage extends BorderPane {
 	 * MainPage constructor builds main page
 	 */
 	public MainPage() {
-		MenuBanner menuBanner = new MenuBanner();
-		menuBanner.getStyleClass().add("menuBanner");
-		setTop(menuBanner);
-		WarehouseReceipt warehouseReceipt = new WarehouseReceipt();
-		setCenter(warehouseReceipt);
+		
+		LoginSection loginSection = new LoginSection(this);
+		setCenter(loginSection);
 	}
 }

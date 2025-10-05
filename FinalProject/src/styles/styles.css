@@ -1,5 +1,9 @@
-WarehouseReceipt {
-	-fx-padding: 10px 20px, 0px, 20px;/*  */
+WarehouseReceipt, LoginSection, CreateUserSection, WelcomePage{
+	-fx-padding: 10px 20px, 0px, 20px;
+	-fx-background-color: rgb(230,230,220);
+}
+
+MenuBanner {
 	-fx-background-color: rgb(230,230,220);
 }
 
