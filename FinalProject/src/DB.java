@@ -140,6 +140,132 @@ public class DB {
 		    System.out.println("User insertion failed");
 		    throw new SQLException(e);
 		}
+	}
+	
+	
+	/**
+	 * insert item into items
+	 * @param itemName String (100)
+	 * @param userID int: current user
+	 * @param description String (255)
+	 * @param weightKG float
+	 * @param price int: in cents
+	 * @param taxBracket TaxBracket enum
+	 * @param expirationTime int: days after receipt until expire
+	 * @param SKU String (64)
+	 * @param category Category enum
+	 * @param unitsPerBin int: number of units that fit in a single bin
+	 * @param minTemp int: min temp
+	 * @param maxTemp int: max temp
+	 * @throws SQLException
+	 */
+	public void addItem(
+			String itemName,
+			int userID,
+			String description,
+			float weightKG,
+			int price,
+			TaxBracket taxBracket,
+			int expirationTime,
+			String SKU,
+			Category category,
+			int unitsPerBin,
+			int minTemp,
+			int maxTemp
+			) throws SQLException {
+		String sql = "INSERT INTO items("
+				+ "item_name, user_id, description, weight_kg, price, tax_bracket, expiration_time, SKU, "
+				+ "category, units_per_bin, min_temp, max_temp) "
+		           + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+		    pstmt.setString(1, itemName);
+		    pstmt.setInt(2, userID);
+		    pstmt.setString(3, description);
+		    pstmt.setFloat(4, weightKG);
+		    pstmt.setInt(5, price);
+		    pstmt.setString(6, taxBracket.name());
+		    pstmt.setInt(7, expirationTime);
+		    pstmt.setString(8, SKU);
+		    pstmt.setString(9, category.name());
+		    pstmt.setInt(10, unitsPerBin);
+		    pstmt.setInt(11, minTemp);
+		    pstmt.setInt(12, maxTemp);
+
+		    pstmt.executeUpdate();
+		} catch (SQLException e) {
+		    System.out.println("User insertion failed");
+		    throw new SQLException(e);
+		}
+	}
+	
+	/**
+	 * insert item into items, no temperature requirements
+	 * @param itemName String (100)
+	 * @param userID int: current user
+	 * @param description String (255)
+	 * @param weightKG float
+	 * @param price int: in cents
+	 * @param taxBracket TaxBracket enum
+	 * @param expirationTime int: days after receipt until expire
+	 * @param SKU String (64)
+	 * @param category Category enum
+	 * @param unitsPerBin int: number of units that fit in a single bin
+	 * @throws SQLException
+	 */
+	public void addItem(
+			String itemName,
+			int userID,
+			String description,
+			float weightKG,
+			int price,
+			TaxBracket taxBracket,
+			int expirationTime,
+			String SKU,
+			Category category,
+			int unitsPerBin
+			) throws SQLException {
+		String sql = "INSERT INTO items("
+				+ "item_name, user_id, description, weight_kg, price, tax_bracket, expiration_time, SKU, "
+				+ "category, units_per_bin) "
+		           + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+		    pstmt.setString(1, itemName);
+		    pstmt.setInt(2, userID);
+		    pstmt.setString(3, description);
+		    pstmt.setFloat(4, weightKG);
+		    pstmt.setInt(5, price);
+		    pstmt.setString(6, taxBracket.name());
+		    pstmt.setInt(7, expirationTime);
+		    pstmt.setString(8, SKU);
+		    pstmt.setString(9, category.name());
+		    pstmt.setInt(10, unitsPerBin);
+
+		    pstmt.executeUpdate();
+		} catch (SQLException e) {
+		    System.out.println("User insertion failed");
+		    throw new SQLException(e);
+		}
+	}
+	
+	public User getUser(String username) throws SQLException{
+		String sql = "SELECT user_id FROM users "
+				+	 "WHERE username = ?;";
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+			pstmt.setString(1,  username);
+			
+			ResultSet results = pstmt.executeQuery();
+			if (results.next())
+				return new User(results.getInt("username"));
+			else
+				return null;
+		} catch (SQLException e) {
+			System.out.println("Query Failed - getSalt");
+			throw e;
+		}
 	}
 }

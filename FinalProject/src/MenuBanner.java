@@ -7,7 +7,7 @@ public class MenuBanner extends FlowPane {
 	/**
 	 * Builds menu on top of every page
 	 */
-	public MenuBanner(MainPage page) {
+	public MenuBanner(MainPage page, User user) {
 		Button homeButton = new Button("Home");
 		Button settingsButton = new Button("Settings");
 		Button addInventoryButton = new Button("Add Inventory Item");
@@ -24,6 +24,12 @@ public class MenuBanner extends FlowPane {
 		homeButton.setOnAction(event -> {
 			System.out.println("Home page");
 			page.setCenter(new WelcomePage());
+		});
+		
+		addInventoryButton.setOnAction(event -> {
+			System.out.println("Transferring to Add Inventory Item Page");
+			CreateInventoryItemPage invItemPage = new InventoryItemPage(user);
+			page.setCenter(invItemPage);
 		});
 		
 		warehouseReceiptButton.setOnAction(event -> {

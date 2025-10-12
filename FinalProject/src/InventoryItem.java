@@ -5,8 +5,7 @@
  */
 public abstract class InventoryItem {
 	private int price;
-	private float taxRate;
-	private int taxes;
+	private TaxBracket taxBracket;
 	private String itemName;
 	
 	/**
@@ -21,11 +20,10 @@ public abstract class InventoryItem {
 	 * @param taxRate Float: Tax rate for item
 	 * @param taxes Taxes: Calculated taxes
 	 */
-	InventoryItem(String itemName, int price, float taxRate, int taxes){
+	InventoryItem(String itemName, int price, TaxBracket _taxBracket){
 		setItemName(itemName);
 		setPrice(price);
-		setTaxRate(taxRate);
-		setTaxes(taxes);
+		setTaxes(taxBracket);
 	}
 	
 	/**
@@ -50,17 +48,9 @@ public abstract class InventoryItem {
 	 * @return taxRate Float: tax rate
 	 */
 	public float getTaxRate() {
-		return taxRate;
+		return taxBracket.getRate();
 	}
 	
-	/**
-	 * Set tax rate
-	 * 
-	 * @param taxRate Float: Item tax rate
-	 */
-	public void setTaxRate(float taxRate) {
-		this.taxRate = taxRate;
-	}
 	
 	/**
 	 * Get tax amount
@@ -68,16 +58,25 @@ public abstract class InventoryItem {
 	 * @return taxes Integer: Tax value in cents
 	 */
 	public int getTaxes() {
-		return taxes;
+		return getTotalPrice() - getPrice();
 	}
 	
 	/**
-	 * Set tax amount
+	 * Get total price
 	 * 
-	 * @param taxes Integer: Tax value in cents
+	 * @return price Integer: Total price with taxes in cents
 	 */
-	public void setTaxes(int taxes) {
-		this.taxes = taxes;
+	public int getTotalPrice() {
+		return Math.round(getTaxRate() * getPrice());
+	}
+	
+	/**
+	 * Set tax bracket
+	 * 
+	 * @param taxes TaxBracket: 
+	 */
+	public void setTaxes(TaxBracket _taxBracket) {
+		this.taxBracket = _taxBracket;
 	}
 	
 	/**

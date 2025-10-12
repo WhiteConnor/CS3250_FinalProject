@@ -38,8 +38,10 @@ public class LoginSection extends VBox {
 				auth = new Authentication(usernameTextField.getText());
 				boolean loginAccepted = auth.verify(passwordPasswordField.getText());
 				System.out.println("Login accepted: " + loginAccepted);
+				DB db = new DB();
+				User user = db.getUser(usernameTextField.getText());
 				if (loginAccepted) {
-					MenuBanner menuBanner = new MenuBanner(page);
+					MenuBanner menuBanner = new MenuBanner(page, user);
 					menuBanner.getStyleClass().add("menuBanner");
 					page.setTop(menuBanner);
 					page.setCenter(new WelcomePage());

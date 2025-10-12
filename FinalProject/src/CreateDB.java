@@ -69,6 +69,7 @@ public class CreateDB {
 		System.out.println("Creating tables...");
 		try {
 			createUsersTable();
+			createItemsTable();
 		} catch (SQLException e) {
 			System.out.println("Tables creation failed");
 			throw new SQLException(e);
@@ -96,6 +97,74 @@ public class CreateDB {
 			stmt.execute(sql);
 		} catch (SQLException e) {
 			System.out.println("Table creation failed - users");
+			throw new SQLException(e);
+		}
+	}
+	
+	/**
+	 * Table creation method to create items table
+	 * @throws SQLException
+	 */
+	private static void createItemsTable() throws SQLException {
+		// Copilot used on 10/12/2025, wrote query based on requirements, eg price (int in cents), weight_kg...
+		// Query modified after generation to better fit requirements
+		String sql = "CREATE TABLE `items` (\r\n"
+				+ "  `item_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,\r\n"
+				+ "  `item_name` VARCHAR(100) NOT NULL,\r\n"
+				+ "  `user_id` INT UNSIGNED,"
+				+ "  `description` VARCHAR(255) NOT NULL,\r\n"
+				+ "  `weight_kg` FLOAT NOT NULL,\r\n"
+				+ "  `price` INT UNSIGNED NOT NULL,\r\n"
+				+ "  `tax_bracket` ENUM(\r\n"
+				+ "    'FOOD',\r\n"
+				+ "    'MEDICAL',\r\n"
+				+ "    'GENERAL'\r\n"
+				+ "  ) NOT NULL,\r\n"
+				+ "  `expiration_time` INT UNSIGNED NOT NULL,\r\n"
+				+ "  `SKU` VARCHAR(64) NOT NULL UNIQUE,\r\n"
+				+ "  `category` ENUM(\r\n"
+				+ "    'GROCERY',\r\n"
+				+ "    'BEVERAGE',\r\n"
+				+ "    'PHARMACEUTICAL',\r\n"
+				+ "    'APPAREL',\r\n"
+				+ "    'FOOTWEAR',\r\n"
+				+ "    'TOOLS',\r\n"
+				+ "    'ELECTRONICS',\r\n"
+				+ "    'FIREARMS',\r\n"
+				+ "    'AMMUNITION',\r\n"
+				+ "    'FURNITURE',\r\n"
+				+ "    'TOYS',\r\n"
+				+ "    'AUTOMOTIVE',\r\n"
+				+ "    'SPORTING_GOODS',\r\n"
+				+ "    'JEWELRY',\r\n"
+				+ "    'COSMETICS',\r\n"
+				+ "    'PET_SUPPLIES',\r\n"
+				+ "    'CLEANING',\r\n"
+				+ "    'STATIONERY',\r\n"
+				+ "    'GARDENING',\r\n"
+				+ "    'INDUSTRIAL',\r\n"
+				+ "    'OFFICE_EQUIPMENT',\r\n"
+				+ "    'BABY_PRODUCTS',\r\n"
+				+ "    'BOOKS',\r\n"
+				+ "    'MUSIC',\r\n"
+				+ "    'VIDEO_GAMES',\r\n"
+				+ "    'LUXURY'\r\n"
+				+ "  ) NOT NULL,\r\n"
+				+ "  `units_per_bin` INT UNSIGNED NOT NULL,\r\n"
+				+ "  `date_added` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n"
+				+ "  `last_updated` DATETIME DEFAULT NULL,\r\n"
+				+ "  `min_temp` FLOAT DEFAULT NULL,\r\n"
+				+ "  `max_temp` FLOAT DEFAULT NULL,\r\n"
+				+ "  PRIMARY KEY (`item_id`),\r\n"
+				+ "  FOREIGHT KEY (`user_id`) REFERENCES `users`(`user_id`)"
+				+ "  ON UPDATE CASCADE"
+				+ "  ON DELETE SET NULL"
+				+ ");\r\n"
+				+ "";
+		try {
+			stmt.execute(sql);
+		} catch (SQLException e) {
+			System.out.println("Table creation failed - items");
 			throw new SQLException(e);
 		}
 	}

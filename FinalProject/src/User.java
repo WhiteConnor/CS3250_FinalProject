@@ -4,7 +4,7 @@ import java.util.Date;
  * 
  * @author white
  */
-public abstract class User {
+public class User {
 	private int userID;
 	private String firstName;
 	private String lastName;
@@ -13,6 +13,10 @@ public abstract class User {
 	private String salt;
 	private String hashedPassword;
 	private Sex gender;
+	
+	User(int userID) {
+		setUserID(userID);
+	}
 	/**
 	 * Reset the user password
 	 * @param salt String: 16 byte string salt
