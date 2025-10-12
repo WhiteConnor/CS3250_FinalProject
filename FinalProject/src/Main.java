@@ -14,7 +14,7 @@ public class Main extends Application {
 	public static void main(String[] args) {
 		CreateDB.initialize();
 		launch(args);
-		// start time 12:19
+		// start time 4:58
 	}
 	
 	/**
