@@ -251,6 +251,12 @@ public class DB {
 		}
 	}
 	
+	/**
+	 * Gets user item
+	 * @param username String: unique username
+	 * @return User user
+	 * @throws SQLException
+	 */
 	public User getUser(String username) throws SQLException{
 		String sql = "SELECT user_id FROM users "
 				+	 "WHERE username = ?;";

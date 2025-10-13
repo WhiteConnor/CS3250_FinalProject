@@ -6,7 +6,14 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
+/**
+ * CreateInventoryItemSection class creates a gui page for adding an item to tb. Connects to DB to insert items
+ */
 public class CreateInventoryItemSection extends VBox{
+	/*
+	 * Constructor
+	 * @param user User: user item for tracking item creation
+	 */
 	public CreateInventoryItemSection(User user) {
 		Label titleLabel = new Label("Add Inventory Item");
 		
