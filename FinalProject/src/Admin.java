@@ -5,4 +5,9 @@
  */
 public class Admin extends User {
 
+	Admin(int userID) {
+		super(userID);
+		// TODO Auto-generated constructor stub
+	}
+
 }

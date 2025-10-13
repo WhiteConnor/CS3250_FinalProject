@@ -6,6 +6,11 @@ import java.util.ArrayList;
  * @author white
  */
 public class Manager extends User {
+	Manager(int userID) {
+		super(userID);
+		// TODO Auto-generated constructor stub
+	}
+
 	private String location;
 	private ArrayList<Employee> subordinates;
 	

@@ -4,6 +4,11 @@
  * @author white
  */
 public class Employee extends User {
+	Employee(int userID) {
+		super(userID);
+		// TODO Auto-generated constructor stub
+	}
+
 	private String location;
 
 	/**

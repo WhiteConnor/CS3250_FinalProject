@@ -28,7 +28,7 @@ public class MenuBanner extends FlowPane {
 		
 		addInventoryButton.setOnAction(event -> {
 			System.out.println("Transferring to Add Inventory Item Page");
-			CreateInventoryItemPage invItemPage = new InventoryItemPage(user);
+			CreateInventoryItemSection invItemPage = new CreateInventoryItemSection(user);
 			page.setCenter(invItemPage);
 		});
 		

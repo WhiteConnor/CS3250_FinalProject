@@ -260,11 +260,11 @@ public class DB {
 			
 			ResultSet results = pstmt.executeQuery();
 			if (results.next())
-				return new User(results.getInt("username"));
+				return new User(results.getInt("user_id"));
 			else
 				return null;
 		} catch (SQLException e) {
-			System.out.println("Query Failed - getSalt");
+			System.out.println("Query Failed - get user");
 			throw e;
 		}
 	}

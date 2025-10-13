@@ -4,6 +4,11 @@
  * @author white
  */
 public class Customer extends User {
+	Customer(int userID) {
+		super(userID);
+		// TODO Auto-generated constructor stub
+	}
+
 	private int points;
 
 	/**

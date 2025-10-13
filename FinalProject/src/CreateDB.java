@@ -90,7 +90,7 @@ public class CreateDB {
 				+ "  `salt` VARCHAR(24) NOT NULL,\r\n"
 				+ "  `hashed_password` VARCHAR(128) NOT NULL,\r\n"
 				+ "  `sex` ENUM('MALE','FEMALE') NOT NULL,\r\n"
-				+ "  `role` ENUM('ADMIN','MANAGER','EMPLOYEE','CUSTOMER'),\r\n"
+				+ "  `role` ENUM('ADMIN','MANAGER','EMPLOYEE','CUSTOMER') NOT NULL,\r\n"
 				+ "  PRIMARY KEY (`user_id`)\r\n"
 				+ ");";
 		try {
@@ -153,10 +153,10 @@ public class CreateDB {
 				+ "  `units_per_bin` INT UNSIGNED NOT NULL,\r\n"
 				+ "  `date_added` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n"
 				+ "  `last_updated` DATETIME DEFAULT NULL,\r\n"
-				+ "  `min_temp` FLOAT DEFAULT NULL,\r\n"
-				+ "  `max_temp` FLOAT DEFAULT NULL,\r\n"
+				+ "  `min_temp` INT DEFAULT NULL,\r\n"
+				+ "  `max_temp` INT DEFAULT NULL,\r\n"
 				+ "  PRIMARY KEY (`item_id`),\r\n"
-				+ "  FOREIGHT KEY (`user_id`) REFERENCES `users`(`user_id`)"
+				+ "  FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)"
 				+ "  ON UPDATE CASCADE"
 				+ "  ON DELETE SET NULL"
 				+ ");\r\n"
