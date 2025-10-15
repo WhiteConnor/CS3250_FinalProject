@@ -22,7 +22,7 @@ public class Main extends Application {
 	 */
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		Scene scene = new Scene(new MainPage(),500,700);
+		Scene scene = new Scene(new MainPage(),1500,1000);
 		String stylesheet = getClass().getResource("styles/styles.css").toExternalForm();
 		scene.getStylesheets().add(stylesheet);
 		primaryStage.setScene(scene);

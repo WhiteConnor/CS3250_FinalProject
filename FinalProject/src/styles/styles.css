@@ -1,4 +1,4 @@
-WarehouseReceipt, LoginSection, CreateUserSection, WelcomePage{
+CreateInventoryItemSection, WarehouseReceipt, LoginSection, CreateUserSection, WelcomePage {
 	-fx-padding: 10px 20px, 0px, 20px;
 	-fx-background-color: rgb(230,230,220);
 }
@@ -7,3 +7,10 @@ MenuBanner {
 	-fx-background-color: rgb(230,230,220);
 }
 
+.error-label {
+	-fx-text-fill: rgb(255,100,100);
+}
+
+.warning-label {
+	-fx-text-fill: rgb(250, 175, 100);
+}

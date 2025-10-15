@@ -1,4 +1,5 @@
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
 /**
  * MenuBanner class to handle menu on every page
@@ -29,20 +30,23 @@ public class MenuBanner extends FlowPane {
 		addInventoryButton.setOnAction(event -> {
 			System.out.println("Transferring to Add Inventory Item Page");
 			CreateInventoryItemSection invItemPage = new CreateInventoryItemSection(user);
-			page.setCenter(invItemPage);
+			ScrollPane scrollPane = (ScrollPane) page.getCenter();
+			scrollPane.setContent(invItemPage);
 		});
 		
 		warehouseReceiptButton.setOnAction(event -> {
 			System.out.println("Transferring to warehouse receipt page");
 			WarehouseReceipt warehouseReceipt = new WarehouseReceipt();
-			page.setCenter(warehouseReceipt);
+			ScrollPane scrollPane = (ScrollPane) page.getCenter();
+			scrollPane.setContent(warehouseReceipt);
 		});
 		
 		logoutButton.setOnAction(event -> {
 			System.out.println("Logging out");
 			page.setTop(null);
 			LoginSection loginSection = new LoginSection(page);
-			page.setCenter(loginSection);
+			ScrollPane scrollPane = (ScrollPane) page.getCenter();
+			scrollPane.setContent(loginSection);
 		});
 	}
 }

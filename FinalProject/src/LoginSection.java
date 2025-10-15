@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 
 import javafx.scene.control.TextField;
@@ -44,12 +45,45 @@ public class LoginSection extends VBox {
 					MenuBanner menuBanner = new MenuBanner(page, user);
 					menuBanner.getStyleClass().add("menuBanner");
 					page.setTop(menuBanner);
-					page.setCenter(new WelcomePage());
+					ScrollPane scrollPane = (ScrollPane) page.getCenter();
+					scrollPane.setContent(new WelcomePage());
 				}
 			} catch (SQLException e) {
-				e.printStackTrace();
+				Boolean existingError[] = new Boolean[1];
+				existingError[0] = false;
+				getChildren().forEach(child -> {
+					if (child.getStyleClass().contains("error-label"))
+						existingError[0] = true;
+				});
+				if (!existingError[0]) {
+					Label errorLabel = new Label("Incorrect username or password");
+					errorLabel.getStyleClass().add("error-label");
+					getChildren().add(errorLabel);
+				}
 			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
+				Boolean existingError[] = new Boolean[1];
+				existingError[0] = false;
+				getChildren().forEach(child -> {
+					if (child.getStyleClass().contains("error-label"))
+						existingError[0] = true;
+				});
+				if (!existingError[0]) {
+					Label errorLabel = new Label("No Such Algorithm Exception, please contact developer");
+					errorLabel.getStyleClass().add("error-label");
+					getChildren().add(errorLabel);
+				}
+			} catch (Exception e) {
+				Boolean existingError[] = new Boolean[1];
+				existingError[0] = false;
+				getChildren().forEach(child -> {
+					if (child.getStyleClass().contains("error-label"))
+						existingError[0] = true;
+				});
+				if (!existingError[0]) {
+					Label errorLabel = new Label("Incorrect username or password");
+					errorLabel.getStyleClass().add("error-label");
+					getChildren().add(errorLabel);
+				}
 			}
 			
 			

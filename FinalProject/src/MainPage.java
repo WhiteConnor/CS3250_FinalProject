@@ -1,3 +1,4 @@
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 
 /**
@@ -12,6 +13,10 @@ public class MainPage extends BorderPane {
 	public MainPage() {
 		
 		LoginSection loginSection = new LoginSection(this);
-		setCenter(loginSection);
+		ScrollPane scrollPane = new ScrollPane(loginSection);
+		scrollPane.setFitToWidth(true);
+		scrollPane.setFitToHeight(true);
+
+		setCenter(scrollPane);
 	}
 }

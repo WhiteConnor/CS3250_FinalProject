@@ -178,6 +178,7 @@ public class CreateDB {
 		System.out.println("Inserting seed data...");
 		try {
 			addUsers();
+			
 		} catch (SQLException e) {
 			System.out.println("Failed to insert seed data");
 			throw new SQLException(e);

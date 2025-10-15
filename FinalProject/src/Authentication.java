@@ -65,19 +65,21 @@ public class Authentication {
 		byte saltBytes[] = new byte[16];
 		generator.nextBytes(saltBytes);
 		salt = Base64.getEncoder().encodeToString(saltBytes);
-		
 	}
 	
 	/**
 	 * Verify password by comparing db hashed value with new hashed value
 	 * @param password String: unhashed password
 	 * @return Boolean: verification passed
-	 * @throws NoSuchAlgorithmException 
+	 * @throws Exception 
 	 */
-	public boolean verify(String password) throws NoSuchAlgorithmException {
+	public boolean verify(String password) throws Exception {
 		DB db = new DB();
 		try {
-			return db.getHashedPass(username).equals(this.generateHash(password));
+			String hashedPass = db.getHashedPass(username);
+			if (hashedPass.isEmpty())
+				throw new Exception("No password for this user");
+			return hashedPass.equals(this.generateHash(password));
 		} catch (NoSuchAlgorithmException e) {
 			throw e;
 		}
