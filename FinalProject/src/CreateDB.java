@@ -83,10 +83,11 @@ public class CreateDB {
 	private static void createUsersTable() throws SQLException {
 		String sql = "CREATE TABLE `users` (\r\n"
 				+ "  `user_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,\r\n"
-				+ "  `first_name` VARCHAR(100) NOT NULL,\r\n"
-				+ "  `last_name` VARCHAR(100) NOT NULL,\r\n"
-				+ "  `birth_date` DATE NOT NULL,\r\n"
 				+ "  `username` VARCHAR(50) NOT NULL UNIQUE,\r\n"
+				+ "  `first_name` VARCHAR(50) NOT NULL,\r\n"
+				+ "  `last_name` VARCHAR(50) NOT NULL,\r\n"
+				+ "  `birth_date` DATE NOT NULL,\r\n"
+				+ "  `email` VARCHAR(128) NOT NULL UNIQUE,\r\n"
 				+ "  `salt` VARCHAR(24) NOT NULL,\r\n"
 				+ "  `hashed_password` VARCHAR(128) NOT NULL,\r\n"
 				+ "  `sex` ENUM('MALE','FEMALE') NOT NULL,\r\n"
@@ -204,14 +205,14 @@ public class CreateDB {
 		 */
 
 		String sql = "INSERT INTO `users` (\r\n"
-				+ "  `first_name`, `last_name`, `birth_date`, `username`, `salt`, `hashed_password`, `sex`, `role`\r\n"
+				+ "  `first_name`, `last_name`, `birth_date`, `username`, `email`, `salt`, `hashed_password`, `sex`, `role`\r\n"
 				+ ") VALUES\r\n"
-				+ "('Alice', 'Johnson', '1990-04-15', 'alicej', 'salt123456789012', 'hashed_pw_1', 'FEMALE', 'ADMIN'),\r\n"
-				+ "('Bob', 'Smith', '1985-09-22', 'bobsmith', 'salt123456789013', 'hashed_pw_2', 'MALE', 'MANAGER'),\r\n"
-				+ "('Carol', 'Nguyen', '1992-12-03', 'caroln', 'salt123456789014', 'hashed_pw_3', 'FEMALE', 'EMPLOYEE'),\r\n"
-				+ "('David', 'Lee', '1998-07-30', 'dlee98', 'salt123456789015', 'hashed_pw_4', 'MALE', 'CUSTOMER'),\r\n"
-				+ "('Eve', 'Martinez', '1995-01-10', 'evem', 'salt123456789016', 'hashed_pw_5', 'FEMALE', 'EMPLOYEE'),\r\n"
-				+ "('Test', 'Test', '2025-10-01', 'user', 'tz19WOXoaPqUUdAJYxxtGg==', '10/w7o2juYBrGMh32/KbveULW9jk2tejpyUAD+uC6PE=', 'MALE', 'ADMIN');";
+				+ "('Alice', 'Johnson', '1990-04-15', 'alicej', 'alicej@gmail.com', 'salt123456789012', 'hashed_pw_1', 'FEMALE', 'ADMIN'),\r\n"
+				+ "('Bob', 'Smith', '1985-09-22', 'bobsmith', 'bobsmith@gmail.com', 'salt123456789013', 'hashed_pw_2', 'MALE', 'MANAGER'),\r\n"
+				+ "('Carol', 'Nguyen', '1992-12-03', 'caroln', 'caroln@gmail.com',  'salt123456789014', 'hashed_pw_3', 'FEMALE', 'EMPLOYEE'),\r\n"
+				+ "('David', 'Lee', '1998-07-30', 'dlee98', 'dlee98@gmail.com', 'salt123456789015', 'hashed_pw_4', 'MALE', 'CUSTOMER'),\r\n"
+				+ "('Eve', 'Martinez', '1995-01-10', 'evem', 'evem@gmail.com', 'salt123456789016', 'hashed_pw_5', 'FEMALE', 'EMPLOYEE'),\r\n"
+				+ "('Test', 'Test', '2025-10-01', 'user', 'user@gmail.com', 'tz19WOXoaPqUUdAJYxxtGg==', '10/w7o2juYBrGMh32/KbveULW9jk2tejpyUAD+uC6PE=', 'MALE', 'ADMIN');";
 		try {
 			stmt.execute(sql);
 		} catch (SQLException e) {

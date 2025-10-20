@@ -114,6 +114,7 @@ public class DB {
 	public void addUser(
 			String first_name,
 			String last_name,
+			String email,
 			LocalDate birth_date,
 			String username,
 			String salt,
@@ -121,8 +122,8 @@ public class DB {
 			Sex sex,
 			Role role
 			) throws SQLException {
-		String sql = "INSERT INTO users (first_name, last_name, birth_date, username, salt, hashed_password, sex, role) "
-		           + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO users (first_name, last_name, birth_date, username, salt, hashed_password, sex, role, email) "
+		           + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		try {
 			PreparedStatement pstmt = connection.prepareStatement(sql);
@@ -134,6 +135,7 @@ public class DB {
 		    pstmt.setString(6, hashed_password);
 		    pstmt.setString(7, sex.name()); // Copilot used to get string of enums
 		    pstmt.setString(8, role.name());
+		    pstmt.setString(9, email);
 
 		    pstmt.executeUpdate();
 		} catch (SQLException e) {
@@ -272,6 +274,54 @@ public class DB {
 		} catch (SQLException e) {
 			System.out.println("Query Failed - get user");
 			throw e;
+		}
+	}
+	
+	/**
+	 * Ensures that the email doesn't already exist
+	 * @param email String: email to check
+	 * @return Boolean: false if email already exists, true if email is available
+	 */
+	public Boolean verifyUserEmail(String email) {
+		String sql = "SELECT email FROM users WHERE email = ?;";
+				
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+			pstmt.setString(1, email);
+			
+			ResultSet results = pstmt.executeQuery();
+			if (results.next())
+				return false;
+			else
+				return true;
+		} catch (SQLException e) {
+			System.out.println("Query Failed - verify user email");
+			e.printStackTrace();
+			return true;
+		}
+	}
+	
+	/**
+	 * Ensures that the username doesn't already exist
+	 * @param username String: username to check
+	 * @return Boolean: false if user already exists, true if username is available
+	 */
+	public Boolean verifyUsername(String username) {
+		String sql = "SELECT username FROM users WHERE username = ?;";
+				
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+			pstmt.setString(1, username);
+			
+			ResultSet results = pstmt.executeQuery();
+			if (results.next())
+				return false;
+			else
+				return true;
+		} catch (SQLException e) {
+			System.out.println("Query Failed - verify username");
+			e.printStackTrace();
+			return true;
 		}
 	}
 }

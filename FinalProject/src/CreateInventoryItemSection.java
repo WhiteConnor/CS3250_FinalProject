@@ -5,10 +5,13 @@ import java.util.List;
 
 import javafx.collections.FXCollections;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ComboBoxBase;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
@@ -23,20 +26,26 @@ public class CreateInventoryItemSection extends VBox{
 	 * Constructor
 	 * @param user User: user item for tracking item creation
 	 */
-	public CreateInventoryItemSection(User user) {
+	public CreateInventoryItemSection(MainPage page, User user) {
 		Label titleLabel = new Label("Add Inventory Item");
-		
 
 		Label itemNameLabel = new Label("Enter Item Name:");
 		TextField itemNameTF = new TextField();
 		itemNameTF.getStyleClass().add("input");
 		getChildren().addAll(itemNameLabel, itemNameTF);
-		
+		itemNameTF.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!InputHandling.stringMaxLength(newValue, 100))
+				itemNameTF.setText(oldValue);
+		});
 		
 		Label descriptionLabel = new Label("Enter Description:");
 		TextArea descriptionTA = new TextArea();
 		descriptionTA.getStyleClass().add("input");
 		getChildren().addAll(descriptionLabel, descriptionTA);
+		descriptionTA.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!InputHandling.stringMaxLength(newValue, 255))
+				descriptionTA.setText(oldValue);
+		});
 		
 		
 		Label itemPriceLabel = new Label("Enter Item Price:");
@@ -80,6 +89,10 @@ public class CreateInventoryItemSection extends VBox{
 		TextField skuTF = new TextField();
 		skuTF.getStyleClass().add("input");
 		getChildren().addAll(skuLabel, skuTF);
+		skuTF.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!InputHandling.stringMaxLength(newValue, 64))
+				skuTF.setText(oldValue);
+		});
 		
 		Label unitsLabel = new Label("Enter Units Per Bin:");
 		TextField unitsTF = new TextField();
@@ -141,9 +154,9 @@ public class CreateInventoryItemSection extends VBox{
 				toAdd.forEach(node -> {
 					getChildren().add(node.getKey(), node.getValue());
 				});
+				
 				Boolean incomplete = false;
-				if (!toAdd.isEmpty())
-					incomplete = true;
+				incomplete = !toAdd.isEmpty();
 					
 				toAdd = new ArrayList<>(); 
 				iterator = getChildren().iterator();
@@ -158,6 +171,10 @@ public class CreateInventoryItemSection extends VBox{
 						}
 					}
 				}
+				
+				Boolean optionalValues = false;
+				optionalValues = !toAdd.isEmpty();
+				
 				toAdd.forEach(node -> {
 					getChildren().add(node.getKey(), node.getValue());
 				});
@@ -165,7 +182,8 @@ public class CreateInventoryItemSection extends VBox{
 				if (incomplete)
 					throw new Exception("Incomplete input");
 				DB db = new DB();
-				db.addItem(
+				if (!optionalValues)
+					db.addItem(
 						itemNameTF.getText(),
 						user.getUserID(),
 						descriptionTA.getText(),
@@ -179,6 +197,29 @@ public class CreateInventoryItemSection extends VBox{
 						Integer.parseInt(minTempTF.getText()),
 						Integer.parseInt(maxTempTF.getText())
 						);
+				else
+					db.addItem(
+							itemNameTF.getText(),
+							user.getUserID(),
+							descriptionTA.getText(),
+							Float.parseFloat(itemWeightTF.getText()),// float
+							InputHandling.stringToCents(itemPriceTF.getText()),// float 
+							taxComboBox.getValue(),
+							Integer.parseInt(expirTF.getText()),
+							skuTF.getText(),
+							categoryBox.getValue(),
+							Integer.parseInt(unitsTF.getText())
+							);
+				Alert alert = new Alert(AlertType.INFORMATION);
+				alert.setTitle("Item Creation");
+				alert.setHeaderText("Item \"" + itemNameTF.getText() + "\" created successfully");
+				alert.setContentText(descriptionTA.getText());
+
+				alert.showAndWait();
+				
+				CreateInventoryItemSection invItemPage = new CreateInventoryItemSection(page, user);
+				ScrollPane scrollPane = (ScrollPane) page.getCenter();
+				scrollPane.setContent(invItemPage);
 			} catch (NumberFormatException e) {
 				System.out.println("Error adding item - NumberFormatException");
 //				e.printStackTrace();

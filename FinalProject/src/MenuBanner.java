@@ -24,12 +24,13 @@ public class MenuBanner extends FlowPane {
 		
 		homeButton.setOnAction(event -> {
 			System.out.println("Home page");
-			page.setCenter(new WelcomePage());
+			ScrollPane scrollPane = (ScrollPane) page.getCenter();
+			scrollPane.setContent(new WelcomePage());
 		});
 		
 		addInventoryButton.setOnAction(event -> {
 			System.out.println("Transferring to Add Inventory Item Page");
-			CreateInventoryItemSection invItemPage = new CreateInventoryItemSection(user);
+			CreateInventoryItemSection invItemPage = new CreateInventoryItemSection(page, user);
 			ScrollPane scrollPane = (ScrollPane) page.getCenter();
 			scrollPane.setContent(invItemPage);
 		});
