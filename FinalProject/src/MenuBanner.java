@@ -1,4 +1,6 @@
-import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
 /**
@@ -9,40 +11,56 @@ public class MenuBanner extends FlowPane {
 	 * Builds menu on top of every page
 	 */
 	public MenuBanner(MainPage page, User user) {
-		Button homeButton = new Button("Home");
-		Button settingsButton = new Button("Settings");
-		Button addInventoryButton = new Button("Add Inventory Item");
-		Button warehouseReceiptButton = new Button("Warehouse Receipt");
-		Button logoutButton = new Button("Logout");
-		getChildren().addAll(
-				homeButton,
-				settingsButton,
-				addInventoryButton,
-				warehouseReceiptButton,
-				logoutButton
-				);
 		
-		homeButton.setOnAction(event -> {
+		MenuBar mainMenuBar = new MenuBar();
+		
+		Menu fileMenu = new Menu("File");
+		MenuItem homeFile = new MenuItem("Home");
+		MenuItem settingsFile = new MenuItem("Settings");
+		MenuItem logoutFile = new MenuItem("Logout");
+		
+		fileMenu.getItems().addAll(homeFile, settingsFile, logoutFile);
+		
+		Menu inventoryMenu = new Menu("Inventory");
+		
+		MenuItem addInv = new MenuItem("Add Item");
+		MenuItem viewInv = new MenuItem("View Items");
+		
+		inventoryMenu.getItems().addAll(addInv, viewInv);
+		
+		Menu warehouseMenu = new Menu("Warehouse");
+		
+		MenuItem receiptWare = new Menu("Receipts");
+		
+		warehouseMenu.getItems().addAll(receiptWare);
+		
+		mainMenuBar.getMenus().addAll(fileMenu, inventoryMenu, warehouseMenu);
+
+		getChildren().add(mainMenuBar);
+		
+		addInv.setOnAction(event -> {
+			System.out.println("Create Item Page");
+			CreateInventoryItemSection newSection = new CreateInventoryItemSection(page, user);
+			ScrollPane scrollPane = (ScrollPane) page.getCenter();
+			scrollPane.setContent(newSection);
+		});
+		
+		homeFile.setOnAction(event -> {
 			System.out.println("Home page");
 			ScrollPane scrollPane = (ScrollPane) page.getCenter();
 			scrollPane.setContent(new WelcomePage());
 		});
 		
-		addInventoryButton.setOnAction(event -> {
-			System.out.println("Transferring to Add Inventory Item Page");
-			CreateInventoryItemSection invItemPage = new CreateInventoryItemSection(page, user);
-			ScrollPane scrollPane = (ScrollPane) page.getCenter();
-			scrollPane.setContent(invItemPage);
-		});
 		
-		warehouseReceiptButton.setOnAction(event -> {
+		
+		receiptWare.setOnAction(event -> {
 			System.out.println("Transferring to warehouse receipt page");
 			WarehouseReceipt warehouseReceipt = new WarehouseReceipt();
 			ScrollPane scrollPane = (ScrollPane) page.getCenter();
 			scrollPane.setContent(warehouseReceipt);
 		});
 		
-		logoutButton.setOnAction(event -> {
+		logoutFile.setOnAction(event -> {
 			System.out.println("Logging out");
 			page.setTop(null);
 			LoginSection loginSection = new LoginSection(page);

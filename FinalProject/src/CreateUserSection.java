@@ -134,7 +134,9 @@ public class CreateUserSection extends VBox {
 				String pass;
 				pass = auth.newPassword(passwordPasswordField.getText());
 				DB db = new DB();
-				if (db.verifyUserEmail(emailTextField.getText())) {
+				boolean emailVerified= db.verifyUserEmail(emailTextField.getText());
+				boolean usernameVerified= db.verifyUsername(usernameTextField.getText());
+				if (emailVerified && usernameVerified) {
 					db.addUser(
 							firstNameTF.getText(),
 							lastNameTF.getText(),
@@ -149,11 +151,15 @@ public class CreateUserSection extends VBox {
 					LoginSection loginSection = new LoginSection(page);
 					loginSection.getStyleClass().add("loginSection");
 					page.setCenter(loginSection);
-				} else {
+				} else if (!usernameVerified) {
+					Label errorLabel = new Label("Username already in use!");
+					errorLabel.getStyleClass().add("error-label");	
+					getChildren().add(getChildren().indexOf(usernameTextField) + 1, errorLabel);
+				} else if (!emailVerified) {
 					Label errorLabel = new Label("Email already in use!");
 					errorLabel.getStyleClass().add("error-label");	
 					getChildren().add(getChildren().indexOf(emailTextField) + 1, errorLabel);
-				}
+				} 
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} catch (NoSuchAlgorithmException e) {

@@ -72,6 +72,7 @@ public final class InputHandling {
 		return value.matches("(?s).{" + min + "," + max + "}");
 	}
 	
+	
 
 //	/**
 //	 * Apply requirements and return true or false if they all apply

@@ -156,6 +156,8 @@ public class CreateInventoryItemSection extends VBox{
 				});
 				
 				Boolean incomplete = false;
+				for (Object item : toAdd)
+					System.out.println(item);
 				incomplete = !toAdd.isEmpty();
 					
 				toAdd = new ArrayList<>(); 
