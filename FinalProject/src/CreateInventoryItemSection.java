@@ -21,7 +21,7 @@ import javafx.util.Pair;
 /**
  * CreateInventoryItemSection class creates a gui page for adding an item to tb. Connects to DB to insert items
  */
-public class CreateInventoryItemSection extends VBox{
+public class CreateInventoryItemSection extends VBox {
 	/*
 	 * Constructor
 	 * @param user User: user item for tracking item creation

@@ -30,7 +30,7 @@ public class MenuBanner extends FlowPane {
 		
 		Menu warehouseMenu = new Menu("Warehouse");
 		
-		MenuItem receiptWare = new Menu("Receipts");
+		MenuItem receiptWare = new MenuItem("Receipts");
 		
 		warehouseMenu.getItems().addAll(receiptWare);
 		
@@ -41,6 +41,13 @@ public class MenuBanner extends FlowPane {
 		addInv.setOnAction(event -> {
 			System.out.println("Create Item Page");
 			CreateInventoryItemSection newSection = new CreateInventoryItemSection(page, user);
+			ScrollPane scrollPane = (ScrollPane) page.getCenter();
+			scrollPane.setContent(newSection);
+		});
+		
+		viewInv.setOnAction(event -> {
+			System.out.println("View Items page");
+			ViewItemsSection newSection = new ViewItemsSection(page, user);
 			ScrollPane scrollPane = (ScrollPane) page.getCenter();
 			scrollPane.setContent(newSection);
 		});
