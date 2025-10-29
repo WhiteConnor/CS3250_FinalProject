@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 /**
  * DB class is used to handle database actions not related to initialization.
@@ -275,6 +276,38 @@ public class DB {
 			System.out.println("Query Failed - get user");
 			throw e;
 		}
+	}
+	
+	public ArrayList<WarehouseItem> getItems() throws SQLException {
+		ArrayList<WarehouseItem> allItems = new ArrayList<WarehouseItem>();
+		String sql = "SELECT item_name\r\n"
+				+ "				description\r\n"
+				+ "				weight_kg\r\n"
+				+ "				price\r\n"
+				+ "				tax_bracket\r\n"
+				+ "				expiration_time\r\n"
+				+ "				SKU\r\n"
+				+ "				category\r\n"
+				+ "				units_per_bin\r\n"
+				+ "				date_added\r\n"
+				+ "				last_updated\r\n"
+				+ "				min_temp\r\n"
+				+ "				max_temp FROM items;";
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+			pstmt.setString(1,  username);
+			
+			ResultSet results = pstmt.executeQuery();
+			if (results.next())
+				return allItems;
+			else
+				return null;
+		} catch (SQLException e) {
+			System.out.println("Query Failed - get Item");
+			throw e;
+		}
+
+		
 	}
 	
 	/**
