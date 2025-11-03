@@ -1,12 +1,25 @@
+import java.sql.Timestamp;
+
 /**
  * InventoryItem class represents an inventory item
  * 
  * @author white
  */
-public abstract class InventoryItem {
+public class InventoryItem {
+	private String itemName;
+	private int userID;
+	private String description;
+	private float weightKG;
 	private int price;
 	private TaxBracket taxBracket;
-	private String itemName;
+	private int expirationTime;
+	private String SKU;
+	private Category category;
+	private int unitsPerBin;
+	private Timestamp dateAdded;
+	private Timestamp lastUpdated;
+	private int minTemp;
+	private int maxTemp;
 	
 	/**
 	 * Default constructor
@@ -20,11 +33,25 @@ public abstract class InventoryItem {
 	 * @param taxRate Float: Tax rate for item
 	 * @param taxes Taxes: Calculated taxes
 	 */
-	InventoryItem(String itemName, int price, TaxBracket _taxBracket){
-		setItemName(itemName);
-		setPrice(price);
-		setTaxes(taxBracket);
-	}
+	InventoryItem(String itemName, int userID, String description, float weightKG, int price,
+            TaxBracket taxBracket, int expirationTime, String SKU, Category category,
+            int unitsPerBin, Timestamp dateAdded, Timestamp lastUpdated, int minTemp, int maxTemp) {
+		  this.itemName = itemName;
+		  this.userID = userID;
+		  this.description = description;
+		  this.weightKG = weightKG;
+		  this.price = price;
+		  this.taxBracket = taxBracket;
+		  this.expirationTime = expirationTime;
+		  this.SKU = SKU;
+		  this.category = category;
+		  this.unitsPerBin = unitsPerBin;
+		  this.setDateAdded(dateAdded);
+		  this.setLastUpdated(lastUpdated);
+		  this.setMinTemp(minTemp);
+		  this.setMaxTemp(maxTemp);
+  // Optionally set dateAdded and lastUpdated if you have fields for them
+}
 	
 	/**
 	 * Get price of item in cents
@@ -95,6 +122,94 @@ public abstract class InventoryItem {
 	 */
 	public void setItemName(String itemName) {
 		this.itemName = itemName;
+	}
+
+	public int getUserID() {
+		return userID;
+	}
+
+	public void setUserID(int userID) {
+		this.userID = userID;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public float getWeightKG() {
+		return weightKG;
+	}
+
+	public void setWeightKG(float weightKG) {
+		this.weightKG = weightKG;
+	}
+
+	public int getExpirationTime() {
+		return expirationTime;
+	}
+
+	public void setExpirationTime(int expirationTime) {
+		this.expirationTime = expirationTime;
+	}
+
+	public String getSKU() {
+		return SKU;
+	}
+
+	public void setSKU(String sKU) {
+		SKU = sKU;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+	public int getUnitsPerBin() {
+		return unitsPerBin;
+	}
+
+	public void setUnitsPerBin(int unitsPerBin) {
+		this.unitsPerBin = unitsPerBin;
+	}
+
+	public Timestamp getDateAdded() {
+		return dateAdded;
+	}
+
+	public void setDateAdded(Timestamp dateAdded) {
+		this.dateAdded = dateAdded;
+	}
+
+	public Timestamp getLastUpdated() {
+		return lastUpdated;
+	}
+
+	public void setLastUpdated(Timestamp lastUpdated) {
+		this.lastUpdated = lastUpdated;
+	}
+
+	public int getMinTemp() {
+		return minTemp;
+	}
+
+	public void setMinTemp(int minTemp) {
+		this.minTemp = minTemp;
+	}
+
+	public int getMaxTemp() {
+		return maxTemp;
+	}
+
+	public void setMaxTemp(int maxTemp) {
+		this.maxTemp = maxTemp;
 	}
 	
 }
