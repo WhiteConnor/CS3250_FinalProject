@@ -53,6 +53,14 @@ public class InventoryItem {
   // Optionally set dateAdded and lastUpdated if you have fields for them
 }
 	
+	public TaxBracket getTaxBracket() {
+		return this.taxBracket;
+	}
+	
+	public void setTaxBracket(TaxBracket tb) {
+		this.taxBracket = tb;
+	}
+	
 	/**
 	 * Get price of item in cents
 	 * @return price Integer: Price of item in cents

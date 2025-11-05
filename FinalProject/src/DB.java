@@ -279,6 +279,10 @@ public class DB {
 	}
 	
 	public ArrayList<InventoryItem> getItems() throws SQLException {
+		return getItems(50);
+	}
+	
+	public ArrayList<InventoryItem> getItems(int limit) throws SQLException {
 		ArrayList<InventoryItem> allItems = new ArrayList<InventoryItem>();
 		String sql = "SELECT item_name,\r\n"
 				+ "             user_id,\r\n"
@@ -293,10 +297,10 @@ public class DB {
 				+ "				date_added,\r\n"
 				+ "				last_updated,\r\n"
 				+ "				min_temp,\r\n"
-				+ "				max_temp FROM items;";
+				+ "				max_temp FROM items LIMIT ?;";
 		try {
 			PreparedStatement pstmt = connection.prepareStatement(sql);
-//			pstmt.setString(1,  username);
+			pstmt.setInt(1,  limit);
 			
 			ResultSet results = pstmt.executeQuery();
 			while (results.next())

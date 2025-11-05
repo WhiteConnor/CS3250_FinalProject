@@ -32,10 +32,6 @@ public class ViewItemsSection extends VBox {
         table.setEditable(true);
         
         ArrayList<String> tableCols = new ArrayList<>(Arrays.asList("Item Name", "Description", "Weight (kg)", "Price", "Tax Bracket", "Expiration Time", "SKU", "Category", "Units Per Bin", "Date Added", "Last Updated", "Min temp", "Max temp"));
-//        for (String colStr : tableCols) {
-//        	TableColumn column = new TableColumn(colStr);
-//        	table.getColumns().add(column);
-//        }
         for (int i = 0; i < tableCols.size(); i++) {
             TableColumn<InventoryItem, Object> column = new TableColumn<>(tableCols.get(i));
             column.setCellValueFactory(new PropertyValueFactory<>(propertyNames.get(i)));
