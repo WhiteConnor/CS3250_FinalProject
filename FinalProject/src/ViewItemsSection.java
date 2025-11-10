@@ -1,7 +1,13 @@
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.sql.SQLException;
@@ -28,6 +34,39 @@ public class ViewItemsSection extends VBox {
 	public ViewItemsSection(MainPage page, User user) {
 		Label titleLabel = new Label("View Inventory Items");
 		getChildren().add(titleLabel);
+		
+		
+//		select enums, date by range, ints by equals or range, floats by range,
+//		sort dates, ints and floats, sort strings alphabetically
+		
+		/* Category Select */
+		FlowPane categorySelect = new FlowPane();
+		TextField categoryTF = new TextField();
+		categorySelect.getChildren().add(categoryTF);
+		VBox categoryVBox = new VBox();
+		Category[] categoryVals = Category.values();
+		for (Category category : Category.values()) {
+		    Label label = new Label(category.name());
+		    label.getStyleClass().add("select-item");
+		    categoryVBox.getChildren().add(label);
+		}
+		categoryTF.setOnMouseClicked(event -> {
+			
+		});
+		
+		getChildren().addAll(categorySelect);
+		
+		/* Search Bar */
+		HBox searchBar = new HBox();
+		
+		Label searchLbl = new Label("Search: ");
+		TextField titleTextTF = new TextField();
+		Button searchBtn = new Button("Search");
+		
+		searchBar.getChildren().addAll(searchLbl,titleTextTF,searchBtn);
+		getChildren().add(searchBar);
+		
+		
 		TableView table = new TableView();
         table.setEditable(true);
         
@@ -51,6 +90,23 @@ public class ViewItemsSection extends VBox {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        
+        searchBtn.setOnAction(event -> {
+	        try {
+	        	String text = titleTextTF.getText();
+	        	if (text.equals(""))
+	        		text = "%";
+	        	
+        		table.getItems().clear();
+	        	ArrayList<InventoryItem> allItems = db.getItems(text);
+	        	for (InventoryItem item : allItems)
+	        		table.getItems().add(item);
+				System.out.println(allItems);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
  
 	}
 }

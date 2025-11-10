@@ -28,6 +28,7 @@ public class CreateInventoryItemSection extends VBox {
 	 */
 	public CreateInventoryItemSection(MainPage page, User user) {
 		Label titleLabel = new Label("Add Inventory Item");
+		
 
 		Label itemNameLabel = new Label("Enter Item Name:");
 		TextField itemNameTF = new TextField();

@@ -325,10 +325,57 @@ public class DB {
 			System.out.println("Query Failed - get Item");
 			throw e;
 		}
+	}
+	
+	public ArrayList<InventoryItem> getItems(String searchTerm) throws SQLException {
+		ArrayList<InventoryItem> allItems = new ArrayList<InventoryItem>();
+		String sql = "SELECT item_name,\r\n"
+		        + "             user_id,\r\n"
+		        + "				description,\r\n"
+		        + "				weight_kg,\r\n"
+		        + "				price,\r\n"
+		        + "				tax_bracket,\r\n"
+		        + "				expiration_time,\r\n"
+		        + "				SKU,\r\n"
+		        + "				category,\r\n"
+		        + "				units_per_bin,\r\n"
+		        + "				date_added,\r\n"
+		        + "				last_updated,\r\n"
+		        + "				min_temp,\r\n"
+		        + "				max_temp\r\n"
+		        + "FROM items\r\n"
+		        + "WHERE item_name LIKE ?\r\n"
+		        + "LIMIT 50;";
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+			pstmt.setString(1, "%" + searchTerm + "%");
+			
+			ResultSet results = pstmt.executeQuery();
+			while (results.next())
+				allItems.add(new InventoryItem(
+					    results.getString("item_name"),                 
+					    results.getInt("user_id"),                      
+					    results.getString("description"),               
+					    results.getFloat("weight_kg"),                  
+					    results.getInt("price"),                        
+					    TaxBracket.valueOf(results.getString("tax_bracket")),
+					    results.getInt("expiration_time"),              
+					    results.getString("SKU"),                       
+					    Category.valueOf(results.getString("category")),
+					    results.getInt("units_per_bin"),
+					    results.getTimestamp("date_added"),
+					    results.getTimestamp("last_updated"),
+					    results.getInt("min_temp"),						 
+					    results.getInt("max_temp")
+					));
+			return allItems;
+		} catch (SQLException e) {
+			System.out.println("Query Failed - get Item");
+			throw e;
+		}
 
 		
 	}
-	
 	/**
 	 * Ensures that the email doesn't already exist
 	 * @param email String: email to check
