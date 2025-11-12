@@ -1,4 +1,5 @@
 import javafx.event.ActionEvent;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -8,13 +9,16 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Popup;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class ViewItemsSection extends VBox {
+public class ViewItemsSection extends StackPane {
 	private ArrayList<String> propertyNames = new ArrayList<>(Arrays.asList(
 		    "itemName",
 		    "description",
@@ -32,29 +36,42 @@ public class ViewItemsSection extends VBox {
 		));
 	
 	public ViewItemsSection(MainPage page, User user) {
+		VBox root = new VBox();
+		this.getChildren().add(root);
 		Label titleLabel = new Label("View Inventory Items");
-		getChildren().add(titleLabel);
+		root.getChildren().add(titleLabel);
 		
 		
 //		select enums, date by range, ints by equals or range, floats by range,
 //		sort dates, ints and floats, sort strings alphabetically
 		
 		/* Category Select */
-		FlowPane categorySelect = new FlowPane();
 		TextField categoryTF = new TextField();
-		categorySelect.getChildren().add(categoryTF);
-		VBox categoryVBox = new VBox();
+		categoryTF.setPrefWidth(200);
+		root.getChildren().add(categoryTF);
+		
+		Popup categoryRoot = new Popup();
+		FlowPane categoryVBox = new FlowPane();
+
+		categoryVBox.setPrefSize(200,200);
+		categoryVBox.setStyle("-fx-background-color: lightgray; -fx-border-color: black;");
+
 		Category[] categoryVals = Category.values();
 		for (Category category : Category.values()) {
-		    Label label = new Label(category.name());
-		    label.getStyleClass().add("select-item");
-		    categoryVBox.getChildren().add(label);
+		    Button button = new Button(category.name());
+		    button.getStyleClass().add("select-item");
+		    categoryVBox.getChildren().add(button);
 		}
+		
+		categoryRoot.getContent().add(categoryVBox);
+		
 		categoryTF.setOnMouseClicked(event -> {
-			
+			Bounds bounds = categoryTF.localToScreen(categoryTF.getBoundsInLocal());
+			categoryRoot.show(categoryTF, bounds.getMinX(), bounds.getMaxY());
+
 		});
 		
-		getChildren().addAll(categorySelect);
+//		getChildren().addAll(categoryRoot);
 		
 		/* Search Bar */
 		HBox searchBar = new HBox();
@@ -64,7 +81,7 @@ public class ViewItemsSection extends VBox {
 		Button searchBtn = new Button("Search");
 		
 		searchBar.getChildren().addAll(searchLbl,titleTextTF,searchBtn);
-		getChildren().add(searchBar);
+		root.getChildren().add(searchBar);
 		
 		
 		TableView table = new TableView();
@@ -77,8 +94,8 @@ public class ViewItemsSection extends VBox {
             table.getColumns().add(column);
         }
 
-        setSpacing(5);
-        getChildren().addAll(table);
+        root.setSpacing(5);
+        root.getChildren().addAll(table);
         
         DB db = new DB();
         try {
