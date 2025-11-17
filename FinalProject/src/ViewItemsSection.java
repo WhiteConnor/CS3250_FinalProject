@@ -1,6 +1,4 @@
-import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -9,7 +7,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
@@ -17,6 +14,7 @@ import javafx.stage.Popup;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class ViewItemsSection extends StackPane {
 	private ArrayList<String> propertyNames = new ArrayList<>(Arrays.asList(
@@ -36,6 +34,7 @@ public class ViewItemsSection extends StackPane {
 		));
 	
 	public ViewItemsSection(MainPage page, User user) {
+		DB db = new DB();
 		VBox root = new VBox();
 		this.getChildren().add(root);
 		Label titleLabel = new Label("View Inventory Items");
@@ -46,9 +45,29 @@ public class ViewItemsSection extends StackPane {
 //		sort dates, ints and floats, sort strings alphabetically
 		
 		/* Category Select */
-		TextField categoryTF = new TextField();
-		categoryTF.setPrefWidth(200);
-		root.getChildren().add(categoryTF);
+		FlowPane categoryFP = new FlowPane();
+		root.getChildren().add(categoryFP);
+		Button addCatFiltersBtn = new Button("Add Categories");
+		root.getChildren().add(addCatFiltersBtn);
+		Button applyFiltersBtn = new Button("Apply Filters");
+		
+		applyFiltersBtn.setOnAction(e -> {
+			ArrayList<Category> selectedCategories = new ArrayList<>();
+        	categoryFP.getChildren().forEach(child -> {
+        		String text = ((CategoryButton) child).getText();
+        		System.out.println(text);
+        		Category category = Category.valueOf(text);
+        		selectedCategories.add(category);
+        	});
+        	if (selectedCategories.isEmpty()) {
+        		selectedCategories.addAll(List.of(Category.values()));
+        		System.out.println(selectedCategories);
+        	} else {
+        		System.out.println(selectedCategories);
+        	}
+		});
+		
+		root.getChildren().add(applyFiltersBtn);
 		
 		Popup categoryRoot = new Popup();
 		FlowPane categoryVBox = new FlowPane();
@@ -57,17 +76,24 @@ public class ViewItemsSection extends StackPane {
 		categoryVBox.setStyle("-fx-background-color: lightgray; -fx-border-color: black;");
 
 		Category[] categoryVals = Category.values();
-		for (Category category : Category.values()) {
+		for (Category category : categoryVals) {
 		    Button button = new Button(category.name());
 		    button.getStyleClass().add("select-item");
+		    button.setOnAction(e -> {
+		    	categoryFP.getChildren().add(new CategoryButton(category.name(), button));
+		    	button.setVisible(false);
+		        categoryRoot.hide();
+		    });
+
 		    categoryVBox.getChildren().add(button);
+		    
 		}
 		
 		categoryRoot.getContent().add(categoryVBox);
 		
-		categoryTF.setOnMouseClicked(event -> {
-			Bounds bounds = categoryTF.localToScreen(categoryTF.getBoundsInLocal());
-			categoryRoot.show(categoryTF, bounds.getMinX(), bounds.getMaxY());
+		addCatFiltersBtn.setOnAction(event -> {
+			Bounds bounds = categoryFP.localToScreen(categoryFP.getBoundsInLocal());
+			categoryRoot.show(categoryFP, bounds.getMinX(), bounds.getMaxY());
 
 		});
 		
@@ -97,7 +123,7 @@ public class ViewItemsSection extends StackPane {
         root.setSpacing(5);
         root.getChildren().addAll(table);
         
-        DB db = new DB();
+        
         try {
         	ArrayList<InventoryItem> allItems = db.getItems();
         	for (InventoryItem item : allItems)
