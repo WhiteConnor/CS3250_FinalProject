@@ -3,8 +3,11 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-
+import javafx.util.Pair;
 import javafx.scene.control.TextField;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javafx.collections.*;
 
@@ -16,11 +19,22 @@ import javafx.collections.*;
 public class WarehouseReceipt extends VBox {
 	public WarehouseReceipt() {
 		Label titleLabel = new Label("Warehouse Receipt");
+		DB db = new DB();
 		
-		String itemsList[] = {"Food", "Water", "Hardware", "Milk", "Floor"};
+		ArrayList<Pair<String, String>> itemsList;
+		try {
+			itemsList = db.getItemSKUs();
+		} catch (SQLException e) {
+			itemsList = new ArrayList<Pair<String, String>>();
+			itemsList.add(new Pair<String, String>("Test", "Test"));
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 
 		Label selectItemLabel = new Label("Select item received:");
-		ComboBox<String> itemComboBox = new ComboBox<String>(FXCollections.observableArrayList(itemsList));
+		ComboBox<Pair<String, String>> itemComboBox = new ComboBox<Pair<String, String>>(FXCollections.observableArrayList(itemsList));
 		getChildren().addAll(titleLabel, selectItemLabel, itemComboBox);
 		
 		Label dateLabel = new Label("Select date of receipt:");
@@ -34,18 +48,23 @@ public class WarehouseReceipt extends VBox {
 		Label stockLabel = new Label("Enter in received stock count");
 		TextField stockTextField = new TextField();
 		getChildren().addAll(stockLabel, stockTextField);
+		stockTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!InputHandling.stringMatchInt(newValue))
+				stockTextField.setText(oldValue);
+		});
 		
 		Button submitButton = new Button("Submit");
 		getChildren().add(submitButton);
 		
 		submitButton.setOnAction(event -> {
 			System.out.println("Form Submitted");
-			DB db = new DB();
+//			DB db = new DB();
+			db.verifySKU(itemComboBox.getValue().getValue());
 			db.insertNewWarehouseReceipt(
-					itemComboBox.getValue(),
+					itemComboBox.getValue().getValue(),
 					receivedDatePicker.getValue(),
 					lotCodeTextField.getText(),
-					stockTextField.getText()
+					stockTextField.getText() // TODO: Parse int here
 					);
 		});
 	}

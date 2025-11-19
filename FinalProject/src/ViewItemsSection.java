@@ -1,5 +1,6 @@
 import javafx.geometry.Bounds;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -41,7 +42,7 @@ public class ViewItemsSection extends StackPane {
 		root.getChildren().add(titleLabel);
 		
 		
-//		select enums, date by range, ints by equals or range, floats by range,
+//		date by range, ints by equals or range, floats by range,
 //		sort dates, ints and floats, sort strings alphabetically
 		
 		/* Category Select */
@@ -49,23 +50,20 @@ public class ViewItemsSection extends StackPane {
 		root.getChildren().add(categoryFP);
 		Button addCatFiltersBtn = new Button("Add Categories");
 		root.getChildren().add(addCatFiltersBtn);
+		
+		/* Tax filters */
+		CheckBox tbFoodCB = new CheckBox("Food");
+		CheckBox tbMedicalCB = new CheckBox("Medical");
+		CheckBox tbGeneralCB = new CheckBox("General");
+		
+		VBox taxBracketVBox = new VBox(10, tbFoodCB, tbMedicalCB, tbGeneralCB);
+		
+		root.getChildren().add(taxBracketVBox);
+		
+		
 		Button applyFiltersBtn = new Button("Apply Filters");
 		
-		applyFiltersBtn.setOnAction(e -> {
-			ArrayList<Category> selectedCategories = new ArrayList<>();
-        	categoryFP.getChildren().forEach(child -> {
-        		String text = ((CategoryButton) child).getText();
-        		System.out.println(text);
-        		Category category = Category.valueOf(text);
-        		selectedCategories.add(category);
-        	});
-        	if (selectedCategories.isEmpty()) {
-        		selectedCategories.addAll(List.of(Category.values()));
-        		System.out.println(selectedCategories);
-        	} else {
-        		System.out.println(selectedCategories);
-        	}
-		});
+		
 		
 		root.getChildren().add(applyFiltersBtn);
 		
@@ -94,10 +92,8 @@ public class ViewItemsSection extends StackPane {
 		addCatFiltersBtn.setOnAction(event -> {
 			Bounds bounds = categoryFP.localToScreen(categoryFP.getBoundsInLocal());
 			categoryRoot.show(categoryFP, bounds.getMinX(), bounds.getMaxY());
-
 		});
 		
-//		getChildren().addAll(categoryRoot);
 		
 		/* Search Bar */
 		HBox searchBar = new HBox();
@@ -105,6 +101,7 @@ public class ViewItemsSection extends StackPane {
 		Label searchLbl = new Label("Search: ");
 		TextField titleTextTF = new TextField();
 		Button searchBtn = new Button("Search");
+		
 		
 		searchBar.getChildren().addAll(searchLbl,titleTextTF,searchBtn);
 		root.getChildren().add(searchBar);
@@ -133,6 +130,35 @@ public class ViewItemsSection extends StackPane {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        
+        applyFiltersBtn.setOnAction(e -> {
+			ArrayList<Category> selectedCategories = new ArrayList<>();
+        	categoryFP.getChildren().forEach(child -> {
+        		String text = ((CategoryButton) child).getText();
+        		System.out.println(text);
+        		Category category = Category.valueOf(text);
+        		selectedCategories.add(category);
+        	});
+        	if (selectedCategories.isEmpty()) {
+        		selectedCategories.addAll(List.of(Category.values()));
+        		System.out.println(selectedCategories);
+        	} else {
+        		System.out.println(selectedCategories);
+        	}
+        	try {
+        		ArrayList<String> taxBracketList = new ArrayList<>();
+        		if (tbFoodCB.isSelected()) taxBracketList.add("FOOD");
+        		if (tbMedicalCB.isSelected())taxBracketList.add("MEDICAL");
+        		if (tbGeneralCB.isSelected())taxBracketList.add("GENERAL");
+        		
+        		table.getItems().clear();
+	        	ArrayList<InventoryItem> allItems = db.getItemsFiltered(titleTextTF.getText(), selectedCategories, taxBracketList);
+	        	for (InventoryItem item : allItems)
+	        		table.getItems().add(item);
+        	} catch (Exception ex) {
+        		ex.printStackTrace();
+        	}
+		});
         
         searchBtn.setOnAction(event -> {
 	        try {

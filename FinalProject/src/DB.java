@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+
+import javafx.util.Pair;
 
 /**
  * DB class is used to handle database actions not related to initialization.
@@ -30,6 +33,25 @@ public class DB {
 		}
 	}
 	
+	public Boolean verifySKU(String SKU) {
+		String sql = "SELECT SKU FROM items WHERE SKU = ?;";
+				
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+			pstmt.setString(1, SKU);
+			
+			ResultSet results = pstmt.executeQuery();
+			if (results.next())
+				return false;
+			else
+				return true;
+		} catch (SQLException e) {
+			System.out.println("Query Failed - verify item SKU");
+			e.printStackTrace();
+			return true;
+		}
+	}
+	
 	/**
 	 * Insert a new warehouse receipt to database
 	 * @param item String: Currently the item name, will be item_id
@@ -38,11 +60,12 @@ public class DB {
 	 * @param stockCount String: Count of items received
 	 */
 	public void insertNewWarehouseReceipt(
-			String item,
+			String SKU,
 			LocalDate receiptDate,
 			String lotCode,
 			String stockCount) {
-		System.out.println("Item name: " + item);
+
+		System.out.println("Item SKU: " + SKU);
 		System.out.println("Date: " + receiptDate);
 		System.out.println("Lot Code: " + lotCode);
 		System.out.println("Stock Count: " + stockCount);
@@ -142,6 +165,25 @@ public class DB {
 		} catch (SQLException e) {
 		    System.out.println("User insertion failed");
 		    throw new SQLException(e);
+		}
+	}
+	
+	public ArrayList<Pair<String, String>> getItemSKUs() throws SQLException {
+		ArrayList<Pair<String, String>> allItems = new ArrayList<>();
+		String sql = "SELECT item_name, SKU FROM items;";
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+			
+			ResultSet results = pstmt.executeQuery();
+			while (results.next())
+				allItems.add(new Pair<String, String>(
+					    results.getString("item_name"),                            
+					    results.getString("SKU")
+					));
+			return allItems;
+		} catch (SQLException e) {
+			System.out.println("Query Failed - get Item - skus");
+			throw e;
 		}
 	}
 	
@@ -373,8 +415,109 @@ public class DB {
 			System.out.println("Query Failed - get Item");
 			throw e;
 		}
+	}
+	
+	public ArrayList<InventoryItem> getItemsFiltered(String searchTerm, ArrayList<Category> categories, ArrayList<String> taxBracket) throws SQLException {
+	    ArrayList<InventoryItem> allItems = new ArrayList<>();
+	    // Used copilot on 11/19 to convert Categories to strings
+	    ArrayList<String> categoriesStrings = categories.stream()
+	            .map(Category::name)
+	            .collect(Collectors.toCollection(ArrayList::new));
+	    
+	    StringBuilder sql = new StringBuilder("SELECT item_name,\n"
+	            + "             user_id,\n"
+	            + "             description,\n"
+	            + "             weight_kg,\n"
+	            + "             price,\n"
+	            + "             tax_bracket,\n"
+	            + "             expiration_time,\n"
+	            + "             SKU,\n"
+	            + "             category,\n"
+	            + "             units_per_bin,\n"
+	            + "             date_added,\n"
+	            + "             last_updated,\n"
+	            + "             min_temp,\n"
+	            + "             max_temp\n"
+	            + "FROM items\n"
+	            + "WHERE 1=1");
 
-		
+	    // Add search term filter if provided
+	    if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+	        sql.append(" AND item_name LIKE ?");
+	    }
+
+	    // Add category filter if provided
+	    if (categoriesStrings != null && !categoriesStrings.isEmpty()) {
+	        sql.append(" AND category IN (");
+	        for (int i = 0; i < categoriesStrings.size(); i++) {
+	            sql.append("?");
+	            if (i < categoriesStrings.size() - 1) {
+	                sql.append(", ");
+	            }
+	        }
+	        sql.append(")");
+	    }
+	    
+	    // Add Tax bracket filter if provided
+	    if (taxBracket != null && !taxBracket.isEmpty()) {
+	    	sql.append(" AND tax_bracket IN (");
+	    	for (int i = 0; i < taxBracket.size(); i++) {
+	    		sql.append("?");
+	    		if (i < taxBracket.size() - 1) {
+	    			sql.append(", ");
+	    		}
+	    	}
+	    	sql.append(")");
+	    }
+
+	    sql.append(" LIMIT 50;");
+
+	    try {
+	        PreparedStatement pstmt = connection.prepareStatement(sql.toString());
+	        int paramIndex = 1;
+
+	        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+	            pstmt.setString(paramIndex++, "%" + searchTerm + "%");
+	        }
+
+	        if (categoriesStrings != null && !categoriesStrings.isEmpty()) {
+	            for (String category : categoriesStrings) {
+	                pstmt.setString(paramIndex++, category);
+	            }
+	        }
+	        
+	        if (taxBracket != null && !taxBracket.isEmpty()) {
+	            for (String bracket : taxBracket) {
+	                pstmt.setString(paramIndex++, bracket);
+	            }
+	        }
+	        
+	        System.out.println(pstmt);
+
+	        ResultSet results = pstmt.executeQuery();
+	        while (results.next()) {
+	            allItems.add(new InventoryItem(
+	                    results.getString("item_name"),
+	                    results.getInt("user_id"),
+	                    results.getString("description"),
+	                    results.getFloat("weight_kg"),
+	                    results.getInt("price"),
+	                    TaxBracket.valueOf(results.getString("tax_bracket")),
+	                    results.getInt("expiration_time"),
+	                    results.getString("SKU"),
+	                    Category.valueOf(results.getString("category")),
+	                    results.getInt("units_per_bin"),
+	                    results.getTimestamp("date_added"),
+	                    results.getTimestamp("last_updated"),
+	                    results.getInt("min_temp"),
+	                    results.getInt("max_temp")
+	            ));
+	        }
+	        return allItems;
+	    } catch (SQLException e) {
+	        System.out.println("Query Failed - get Item");
+	        throw e;
+	    }
 	}
 	/**
 	 * Ensures that the email doesn't already exist
