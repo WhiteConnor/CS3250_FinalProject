@@ -14,6 +14,7 @@ public class MenuBanner extends FlowPane {
 		
 		MenuBar mainMenuBar = new MenuBar();
 		
+		/* File */
 		Menu fileMenu = new Menu("File");
 		MenuItem homeFile = new MenuItem("Home");
 		MenuItem settingsFile = new MenuItem("Settings");
@@ -21,6 +22,7 @@ public class MenuBanner extends FlowPane {
 		
 		fileMenu.getItems().addAll(homeFile, settingsFile, logoutFile);
 		
+		/* Inventory */
 		Menu inventoryMenu = new Menu("Inventory");
 		
 		MenuItem addInv = new MenuItem("Add Item");
@@ -28,15 +30,30 @@ public class MenuBanner extends FlowPane {
 		
 		inventoryMenu.getItems().addAll(addInv, viewInv);
 		
+		/* warehouse */
 		Menu warehouseMenu = new Menu("Warehouse");
 		
 		MenuItem receiptWare = new MenuItem("Receipts");
 		
 		warehouseMenu.getItems().addAll(receiptWare);
 		
-		mainMenuBar.getMenus().addAll(fileMenu, inventoryMenu, warehouseMenu);
+		/* Transactions */
+		
+		Menu transactionsMenu = new Menu("Transactions");
+		MenuItem viewTransaction = new MenuItem("View");
+		MenuItem createTransaction = new MenuItem("Create");
+		transactionsMenu.getItems().addAll(viewTransaction, createTransaction);
+		
+		mainMenuBar.getMenus().addAll(fileMenu, inventoryMenu, warehouseMenu, transactionsMenu);
 
 		getChildren().add(mainMenuBar);
+		
+		viewTransaction.setOnAction(event -> {
+			System.out.println("View Transactions Page");
+			ViewTransactionsSection newSection = new ViewTransactionsSection(page);
+			ScrollPane scrollPane = (ScrollPane) page.getCenter();
+			scrollPane.setContent(newSection);
+		});
 		
 		addInv.setOnAction(event -> {
 			System.out.println("Create Item Page");

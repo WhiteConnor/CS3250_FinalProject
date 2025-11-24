@@ -1,4 +1,4 @@
-CreateInventoryItemSection, WarehouseReceipt, LoginSection, CreateUserSection, WelcomePage {
+CreateInventoryItemSection, WarehouseReceipt, LoginSection, CreateUserSection, WelcomePage, ViewTransactionsSection {
 	-fx-padding: 10px 20px, 0px, 20px;
 	-fx-background-color: rgb(230,230,220);
 }
