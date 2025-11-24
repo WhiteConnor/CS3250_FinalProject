@@ -73,7 +73,7 @@ public class ViewItemsSection extends StackPane {
 		individItemVB.getChildren().add(lowInvCB);
 		// search limit
 		Label searchLimitLbl = new Label("Search limit: ");
-		TextField searchLimitTB = new TextField("100");
+		TextField searchLimitTB = new TextField("50");
 		searchLimitTB.textProperty().addListener((observable, oldValue, newValue) -> {
 		    if (!InputHandling.stringMatchInt(newValue))
 		    	searchLimitTB.setText(oldValue);
