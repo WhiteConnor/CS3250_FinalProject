@@ -11,6 +11,7 @@ public class InventoryItem {
 	private String description;
 	private float weightKG;
 	private int price;
+	private int inventory;
 	private TaxBracket taxBracket;
 	private int expirationTime;
 	private String SKU;
@@ -33,7 +34,7 @@ public class InventoryItem {
 	 * @param taxRate Float: Tax rate for item
 	 * @param taxes Taxes: Calculated taxes
 	 */
-	InventoryItem(String itemName, int userID, String description, float weightKG, int price,
+	InventoryItem(String itemName, int userID, String description, float weightKG, int price, int inventory,
             TaxBracket taxBracket, int expirationTime, String SKU, Category category,
             int unitsPerBin, Timestamp dateAdded, Timestamp lastUpdated, int minTemp, int maxTemp) {
 		  this.itemName = itemName;
@@ -41,6 +42,7 @@ public class InventoryItem {
 		  this.description = description;
 		  this.weightKG = weightKG;
 		  this.price = price;
+		  this.inventory = inventory;
 		  this.taxBracket = taxBracket;
 		  this.expirationTime = expirationTime;
 		  this.SKU = SKU;
@@ -218,6 +220,14 @@ public class InventoryItem {
 
 	public void setMaxTemp(int maxTemp) {
 		this.maxTemp = maxTemp;
+	}
+
+	public int getInventory() {
+		return inventory;
+	}
+
+	public void setInventory(int inventory) {
+		this.inventory = inventory;
 	}
 	
 }

@@ -42,7 +42,6 @@ public class LoginSection extends VBox {
 				DB db = new DB();
 				User user = db.getUser(usernameTextField.getText());
 				if (loginAccepted) {
-					System.out.println("So it should be working here");
 					MenuBanner menuBanner = new MenuBanner(page, user);
 					menuBanner.getStyleClass().add("menuBanner");
 					page.setTop(menuBanner);

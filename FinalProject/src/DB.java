@@ -1,4 +1,5 @@
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -63,12 +64,22 @@ public class DB {
 			String SKU,
 			LocalDate receiptDate,
 			String lotCode,
-			String stockCount) {
+			int stockCount) {
+		String sql = "INSERT INTO warehouse_receipt("
+				+ "SKU, receiptDate, lotCode, stockCount) "
+		           + "VALUES (?, ?, ?, ?)";
 
-		System.out.println("Item SKU: " + SKU);
-		System.out.println("Date: " + receiptDate);
-		System.out.println("Lot Code: " + lotCode);
-		System.out.println("Stock Count: " + stockCount);
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+		    pstmt.setString(1, SKU);
+		    pstmt.setDate(2, Date.valueOf(receiptDate));
+		    pstmt.setString(3, lotCode);
+		    pstmt.setInt(4, stockCount);
+
+		    pstmt.executeUpdate();
+		} catch (SQLException e) {
+		    System.out.println("Warehouse receipt insertion failed");
+		}
 	}
 	
 	/**
@@ -331,15 +342,19 @@ public class DB {
 				+ "				description,\r\n"
 				+ "				weight_kg,\r\n"
 				+ "				price,\r\n"
+		        + "             COALESCE(SUM(w.stockCount), 0) AS inventory,\r\n"
 				+ "				tax_bracket,\r\n"
 				+ "				expiration_time,\r\n"
-				+ "				SKU,\r\n"
+				+ "				i.SKU,\r\n"
 				+ "				category,\r\n"
 				+ "				units_per_bin,\r\n"
 				+ "				date_added,\r\n"
 				+ "				last_updated,\r\n"
 				+ "				min_temp,\r\n"
-				+ "				max_temp FROM items LIMIT ?;";
+				+ "				max_temp FROM items i\r\n"
+		        + "LEFT JOIN warehouse_receipt w ON i.SKU = w.SKU\r\n"
+		        + "GROUP BY i.SKU\r\n"
+				+ "LIMIT ?;";
 		try {
 			PreparedStatement pstmt = connection.prepareStatement(sql);
 			pstmt.setInt(1,  limit);
@@ -351,7 +366,8 @@ public class DB {
 					    results.getInt("user_id"),                      
 					    results.getString("description"),               
 					    results.getFloat("weight_kg"),                  
-					    results.getInt("price"),                        
+					    results.getInt("price"),
+					    results.getInt("inventory"),
 					    TaxBracket.valueOf(results.getString("tax_bracket")),
 					    results.getInt("expiration_time"),              
 					    results.getString("SKU"),                       
@@ -372,22 +388,26 @@ public class DB {
 	public ArrayList<InventoryItem> getItems(String searchTerm) throws SQLException {
 		ArrayList<InventoryItem> allItems = new ArrayList<InventoryItem>();
 		String sql = "SELECT item_name,\r\n"
-		        + "             user_id,\r\n"
 		        + "				description,\r\n"
 		        + "				weight_kg,\r\n"
 		        + "				price,\r\n"
+		        + "             COALESCE(SUM(w.stockCount), 0) AS inventory,\r\n"
 		        + "				tax_bracket,\r\n"
 		        + "				expiration_time,\r\n"
-		        + "				SKU,\r\n"
+		        + "				i.SKU,\r\n"
 		        + "				category,\r\n"
 		        + "				units_per_bin,\r\n"
 		        + "				date_added,\r\n"
 		        + "				last_updated,\r\n"
 		        + "				min_temp,\r\n"
 		        + "				max_temp\r\n"
-		        + "FROM items\r\n"
+		        + "             user_id,\r\n"
+		        + "FROM items i\r\n"
+		        + "LEFT JOIN warehouse_receipt w ON i.SKU = w.SKU\r\n"
 		        + "WHERE item_name LIKE ?\r\n"
+		        + "GROUP BY i.SKU\r\n"
 		        + "LIMIT 50;";
+		//select SKU, sum(stockCount) as inventory from warehouse_receipt group by SKU;
 		try {
 			PreparedStatement pstmt = connection.prepareStatement(sql);
 			pstmt.setString(1, "%" + searchTerm + "%");
@@ -400,6 +420,7 @@ public class DB {
 					    results.getString("description"),               
 					    results.getFloat("weight_kg"),                  
 					    results.getInt("price"),                        
+					    results.getInt("inventory"),
 					    TaxBracket.valueOf(results.getString("tax_bracket")),
 					    results.getInt("expiration_time"),              
 					    results.getString("SKU"),                       
@@ -417,7 +438,12 @@ public class DB {
 		}
 	}
 	
-	public ArrayList<InventoryItem> getItemsFiltered(String searchTerm, ArrayList<Category> categories, ArrayList<String> taxBracket) throws SQLException {
+	public ArrayList<InventoryItem> getItemsFiltered(
+			String searchTerm,
+			ArrayList<Category> categories,
+			ArrayList<String> taxBracket,
+			boolean lowInv,
+			int limit) throws SQLException {
 	    ArrayList<InventoryItem> allItems = new ArrayList<>();
 	    // Used copilot on 11/19 to convert Categories to strings
 	    ArrayList<String> categoriesStrings = categories.stream()
@@ -429,16 +455,18 @@ public class DB {
 	            + "             description,\n"
 	            + "             weight_kg,\n"
 	            + "             price,\n"
+		        + "             COALESCE(SUM(w.stockCount), 0) AS inventory,\r\n"
 	            + "             tax_bracket,\n"
 	            + "             expiration_time,\n"
-	            + "             SKU,\n"
+	            + "             i.SKU,\n"
 	            + "             category,\n"
 	            + "             units_per_bin,\n"
 	            + "             date_added,\n"
 	            + "             last_updated,\n"
 	            + "             min_temp,\n"
 	            + "             max_temp\n"
-	            + "FROM items\n"
+	            + "FROM items i\n"
+		        + "LEFT JOIN warehouse_receipt w ON i.SKU = w.SKU\r\n"
 	            + "WHERE 1=1");
 
 	    // Add search term filter if provided
@@ -469,8 +497,11 @@ public class DB {
 	    	}
 	    	sql.append(")");
 	    }
-
-	    sql.append(" LIMIT 50;");
+	    sql.append(" GROUP BY i.SKU");
+	    limit = limit > 0 ? limit : 100;
+	    
+	    sql.append(lowInv ? " HAVING inventory < 100" : "");
+	    sql.append(" LIMIT " + limit + ";");
 
 	    try {
 	        PreparedStatement pstmt = connection.prepareStatement(sql.toString());
@@ -492,7 +523,7 @@ public class DB {
 	            }
 	        }
 	        
-	        System.out.println(pstmt);
+//	        System.out.println(pstmt);
 
 	        ResultSet results = pstmt.executeQuery();
 	        while (results.next()) {
@@ -502,6 +533,7 @@ public class DB {
 	                    results.getString("description"),
 	                    results.getFloat("weight_kg"),
 	                    results.getInt("price"),
+	                    results.getInt("inventory"),
 	                    TaxBracket.valueOf(results.getString("tax_bracket")),
 	                    results.getInt("expiration_time"),
 	                    results.getString("SKU"),
@@ -565,5 +597,28 @@ public class DB {
 			e.printStackTrace();
 			return true;
 		}
+	}
+	
+	
+	public int getLowInvCount() {
+		String sql = "SELECT COUNT(*) AS low_inventory_count\n"
+					+"FROM (\n"
+					+"    SELECT SKU,\n"
+					+"           COALESCE(SUM(stockCount), 0) AS inventory\n"
+					+"    FROM warehouse_receipt\n"
+					+"    GROUP BY SKU\n"
+					+"    HAVING inventory < 100\n"
+					+") AS sub;";
+		int count = 0;
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+			
+			ResultSet results = pstmt.executeQuery();
+			if (results.next())
+					    count = results.getInt("low_inventory_count");
+		} catch (SQLException e) {
+			return 0;
+		}
+		return count;
 	}
 }

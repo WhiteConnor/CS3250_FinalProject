@@ -27,7 +27,6 @@ public class WarehouseReceipt extends VBox {
 		} catch (SQLException e) {
 			itemsList = new ArrayList<Pair<String, String>>();
 			itemsList.add(new Pair<String, String>("Test", "Test"));
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -58,13 +57,12 @@ public class WarehouseReceipt extends VBox {
 		
 		submitButton.setOnAction(event -> {
 			System.out.println("Form Submitted");
-//			DB db = new DB();
 			db.verifySKU(itemComboBox.getValue().getValue());
 			db.insertNewWarehouseReceipt(
 					itemComboBox.getValue().getValue(),
 					receivedDatePicker.getValue(),
 					lotCodeTextField.getText(),
-					stockTextField.getText() // TODO: Parse int here
+					Integer.parseInt(stockTextField.getText()) // TODO: Parse int here
 					);
 		});
 	}

@@ -70,6 +70,7 @@ public class CreateDB {
 		try {
 			createUsersTable();
 			createItemsTable();
+			createWarehouseReceiptTable();
 		} catch (SQLException e) {
 			System.out.println("Tables creation failed");
 			throw new SQLException(e);
@@ -170,6 +171,28 @@ public class CreateDB {
 		}
 	}
 	
+	
+	private static void createWarehouseReceiptTable() throws SQLException {
+	    String sql = "CREATE TABLE `warehouse_receipt` (\r\n"
+	            + "  `receipt_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,\r\n"
+	            + "  `SKU` VARCHAR(64) NOT NULL,\r\n"
+	            + "  `receiptDate` DATE NOT NULL,\r\n"
+	            + "  `lotCode` VARCHAR(64) NOT NULL,\r\n"
+	            + "  `stockCount` INT UNSIGNED NOT NULL,\r\n"
+	            + "  PRIMARY KEY (`receipt_id`),\r\n"
+	            + "  FOREIGN KEY (`SKU`) REFERENCES `items`(`SKU`)\r\n"
+	            + "    ON UPDATE CASCADE\r\n"
+	            + "    ON DELETE RESTRICT\r\n"
+	            + ");";
+
+	    try {
+	        stmt.execute(sql);
+	    } catch (SQLException e) {
+	        System.out.println("Table creation failed - warehouse_receipt");
+	        throw new SQLException(e);
+	    }
+	}
+	
 	/**
 	 * Calls all seed insertion methods
 	 * 
@@ -180,6 +203,7 @@ public class CreateDB {
 		try {
 			addUsers();
 			addItems();
+			addReceipts();
 		} catch (SQLException e) {
 			System.out.println("Failed to insert seed data");
 			throw new SQLException(e);
@@ -285,5 +309,182 @@ public class CreateDB {
             throw new SQLException(e);
         }
     }
+	
+	private static void addReceipts() throws SQLException {
+		// Created with help from copilot to generate realistic warehouse receipts.
+	    String sql = "INSERT INTO `warehouse_receipt` (\r\n"
+	            + "  `SKU`, `receiptDate`, `lotCode`, `stockCount`\r\n"
+	            + ") VALUES\r\n"
+	            + "('SKU-AMMO-0017','2025-10-01','LOT-AMMO17-1',120),\r\n"
+	            + "('SKU-AMMO-0017','2025-10-15','LOT-AMMO17-2',80),\r\n"
+	            + "('SKU-AMMO-0017','2025-11-01','LOT-AMMO17-3',95),\r\n"
+	            + "('SKU-AMMO-0018','2025-10-02','LOT-AMMO18-1',150),\r\n"
+	            + "('SKU-AMMO-0018','2025-10-20','LOT-AMMO18-2',90),\r\n"
+	            + "('SKU-AMMO-0018','2025-11-05','LOT-AMMO18-3',110),\r\n"
+	            + "('SKU-AMMO-0053','2025-10-05','LOT-AMMO53-1',200),\r\n"
+	            + "('SKU-AMMO-0053','2025-10-25','LOT-AMMO53-2',110),\r\n"
+	            + "('SKU-AMMO-0053','2025-11-10','LOT-AMMO53-3',130),\r\n"
+	            + "('SKU-AMMO-0054','2025-10-06','LOT-AMMO54-1',175),\r\n"
+	            + "('SKU-AMMO-0054','2025-10-28','LOT-AMMO54-2',95),\r\n"
+	            + "('SKU-AMMO-0054','2025-11-12','LOT-AMMO54-3',105),\r\n"
+	            + "('SKU-APP-0007','2025-10-03','LOT-APP7-1',60),\r\n"
+	            + "('SKU-APP-0007','2025-10-18','LOT-APP7-2',40),\r\n"
+	            + "('SKU-APP-0007','2025-11-02','LOT-APP7-3',55),\r\n"
+	            + "('SKU-APP-0008','2025-10-04','LOT-APP8-1',75),\r\n"
+	            + "('SKU-APP-0008','2025-10-19','LOT-APP8-2',55),\r\n"
+	            + "('SKU-APP-0008','2025-11-03','LOT-APP8-3',65),\r\n"
+	            + "('SKU-AUTO-0023','2025-10-07','LOT-AUTO23-1',30),\r\n"
+	            + "('SKU-AUTO-0023','2025-10-21','LOT-AUTO23-2',25),\r\n"
+	            + "('SKU-AUTO-0023','2025-11-04','LOT-AUTO23-3',28),\r\n"
+	            + "('SKU-AUTO-0024','2025-10-08','LOT-AUTO24-1',40),\r\n"
+	            + "('SKU-AUTO-0024','2025-10-22','LOT-AUTO24-2',35),\r\n"
+	            + "('SKU-AUTO-0024','2025-11-06','LOT-AUTO24-3',38),\r\n"
+	            + "('SKU-BABY-0043','2025-10-09','LOT-BABY43-1',50),\r\n"
+	            + "('SKU-BABY-0043','2025-10-23','LOT-BABY43-2',45),\r\n"
+	            + "('SKU-BABY-0043','2025-11-07','LOT-BABY43-3',48),\r\n"
+	            + "('SKU-BABY-0044','2025-10-10','LOT-BABY44-1',55),\r\n"
+	            + "('SKU-BABY-0044','2025-10-24','LOT-BABY44-2',50),\r\n"
+	            + "('SKU-BABY-0044','2025-11-08','LOT-BABY44-3',52),\r\n"
+	            + "('SKU-BEV-0003','2025-10-11','LOT-BEV3-1',100),\r\n"
+	            + "('SKU-BEV-0003','2025-10-26','LOT-BEV3-2',90),\r\n"
+	            + "('SKU-BEV-0003','2025-11-09','LOT-BEV3-3',95),\r\n"
+	            + "('SKU-BEV-0004','2025-10-12','LOT-BEV4-1',110),\r\n"
+	            + "('SKU-BEV-0004','2025-10-27','LOT-BEV4-2',95),\r\n"
+	            + "('SKU-BEV-0004','2025-11-10','LOT-BEV4-3',105),\r\n"
+	            + "('SKU-BOOK-0045','2025-10-13','LOT-BOOK45-1',70),\r\n"
+	            + "('SKU-BOOK-0045','2025-10-28','LOT-BOOK45-2',65),\r\n"
+	            + "('SKU-BOOK-0045','2025-11-11','LOT-BOOK45-3',68),\r\n"
+	            + "('SKU-BOOK-0046','2025-10-14','LOT-BOOK46-1',80),\r\n"
+	            + "('SKU-BOOK-0046','2025-10-29','LOT-BOOK46-2',75),\r\n"
+	            + "('SKU-BOOK-0046','2025-11-12','LOT-BOOK46-3',78),\r\n"
+	            + "('SKU-CLEAN-0033','2025-10-15','LOT-CLEAN33-1',85),\r\n"
+	            + "('SKU-CLEAN-0033','2025-10-30','LOT-CLEAN33-2',70),\r\n"
+	            + "('SKU-CLEAN-0033','2025-11-13','LOT-CLEAN33-3',75),\r\n"
+	            + "('SKU-CLEAN-0034','2025-10-16','LOT-CLEAN34-1',95),\r\n"
+	            + "('SKU-CLEAN-0034','2025-10-31','LOT-CLEAN34-2',80),\r\n"
+	            + "('SKU-CLEAN-0034','2025-11-14','LOT-CLEAN34-3',85),\r\n"
+	            + "('SKU-COS-0029','2025-10-17','LOT-COS29-1',60),\r\n"
+	            + "('SKU-COS-0029','2025-10-25','LOT-COS29-2',55),\r\n"
+	            + "('SKU-COS-0029','2025-11-15','LOT-COS29-3',58),\r\n"
+	            + "('SKU-COS-0030','2025-10-18','LOT-COS30-1',65),\r\n"
+	            + "('SKU-COS-0030','2025-10-26','LOT-COS30-2',60),\r\n"
+	            + "('SKU-COS-0030','2025-11-16','LOT-COS30-3',63),\r\n"
+	            + "('SKU-ELEC-0013','2025-10-19','LOT-ELEC13-1',40),\r\n"
+	            + "('SKU-ELEC-0013','2025-10-27','LOT-ELEC13-2',35),\r\n"
+	            + "('SKU-ELEC-0013','2025-11-05','LOT-ELEC13-3',38),\r\n"
+	            + "('SKU-ELEC-0014','2025-10-20','LOT-ELEC14-1',50),\r\n"
+	            + "('SKU-ELEC-0014','2025-10-28','LOT-ELEC14-2',45),\r\n"
+	            + "('SKU-ELEC-0014','2025-11-06','LOT-ELEC14-3',48),\r\n"
+	            + "('SKU-FIRE-0015','2025-10-21','LOT-FIRE15-1',25),\r\n"
+	            + "('SKU-FIRE-0015','2025-10-29','LOT-FIRE15-2',20),\r\n"
+	            + "('SKU-FIRE-0015','2025-11-07','LOT-FIRE15-3',22),\r\n"
+	            + "('SKU-FIRE-0016','2025-10-22','LOT-FIRE16-1',30),\r\n"
+	            + "('SKU-FIRE-0016','2025-10-30','LOT-FIRE16-2',25),\r\n"
+	            + "('SKU-FIRE-0016','2025-11-08','LOT-FIRE16-3',28),\r\n"
+	            + "('SKU-FTW-0009','2025-10-23','LOT-FTW9-1',70),\r\n"
+	            + "('SKU-FTW-0009','2025-10-31','LOT-FTW9-2',65),\r\n"
+	            + "('SKU-FTW-0009','2025-11-09','LOT-FTW9-3',68),\r\n"
+	            + "('SKU-FTW-0010','2025-10-24','LOT-FTW10-1',80),\r\n"
+	            + "('SKU-FTW-0010','2025-11-01','LOT-FTW10-2',75),\r\n"
+	            + "('SKU-FTW-0010','2025-11-10','LOT-FTW10-3',78),\r\n"
+	            + "('SKU-FURN-0019','2025-10-25','LOT-FURN19-1',45),\r\n"
+	            + "('SKU-FURN-0019','2025-11-02','LOT-FURN19-2',40),\r\n"
+	            + "('SKU-FURN-0019','2025-11-11','LOT-FURN19-3',42),\r\n"
+	            + "('SKU-FURN-0020','2025-10-26','LOT-FURN20-1',55),\r\n"
+	            + "('SKU-FURN-0020','2025-11-03','LOT-FURN20-2',50),\r\n"
+	            + "('SKU-FURN-0020','2025-11-12','LOT-FURN20-3',53),\r\n"
+	            + "('SKU-GAME-0049','2025-10-27','LOT-GAME49-1',90),\r\n"
+	            + "('SKU-GAME-0049','2025-11-04','LOT-GAME49-2',85),\r\n"
+	            + "('SKU-GAME-0049','2025-11-13','LOT-GAME49-3',88),\r\n"
+	            + "('SKU-GAME-0050','2025-10-28','LOT-GAME50-1',100),\r\n"
+	            + "('SKU-GAME-0050','2025-11-05','LOT-GAME50-2',95),\r\n"
+	            + "('SKU-GAME-0050','2025-11-14','LOT-GAME50-3',98),\r\n"
+	            + "('SKU-GARD-0037','2025-10-29','LOT-GARD37-1',60),\r\n"
+	            + "('SKU-GARD-0037','2025-11-06','LOT-GARD37-2',55),\r\n"
+	            + "('SKU-GARD-0037','2025-11-15','LOT-GARD37-3',58),\r\n"
+	            + "('SKU-GARD-0038','2025-10-30','LOT-GARD38-1',70),\r\n"
+	            + "('SKU-GARD-0038','2025-11-07','LOT-GARD38-2',65),\r\n"
+	            + "('SKU-GARD-0038','2025-11-16','LOT-GARD38-3',68),\r\n"
+	            + "('SKU-GROC-0001','2025-10-31','LOT-GROC1-1',200),\r\n"
+	            + "('SKU-GROC-0001','2025-11-08','LOT-GROC1-2',180),\r\n"
+	            + "('SKU-GROC-0001','2025-11-17','LOT-GROC1-3',190),\r\n"
+	            + "('SKU-GROC-0002','2025-11-01','LOT-GROC2-1',220),\r\n"
+	            + "('SKU-GROC-0002','2025-11-09','LOT-GROC2-2',190),\r\n"
+	            + "('SKU-GROC-0002','2025-11-18','LOT-GROC2-3',200),\r\n"
+	            + "('SKU-IND-0039','2025-11-02','LOT-IND39-1',35),\r\n"
+	            + "('SKU-IND-0039','2025-11-10','LOT-IND39-2',30),\r\n"
+	            + "('SKU-IND-0039','2025-11-19','LOT-IND39-3',32),\r\n"
+	            + "('SKU-IND-0040','2025-11-03','LOT-IND40-1',45),\r\n"
+	            + "('SKU-IND-0040','2025-11-11','LOT-IND40-2',40),\r\n"
+	            + "('SKU-IND-0040','2025-11-20','LOT-IND40-3',42),\r\n"
+	            + "('SKU-JEWEL-0027','2025-11-04','LOT-JEWEL27-1',15),\r\n"
+	            + "('SKU-JEWEL-0027','2025-11-12','LOT-JEWEL27-2',12),\r\n"
+	            + "('SKU-JEWEL-0027','2025-11-21','LOT-JEWEL27-3',14),\r\n"
+	            + "('SKU-JEWEL-0028','2025-11-05','LOT-JEWEL28-1',20),\r\n"
+	            + "('SKU-JEWEL-0028','2025-11-13','LOT-JEWEL28-2',18),\r\n"
+	            + "('SKU-JEWEL-0028','2025-11-22','LOT-JEWEL28-3',19),\r\n"
+	            + "('SKU-LUX-0051','2025-11-06','LOT-LUX51-1',10),\r\n"
+	            + "('SKU-LUX-0051','2025-11-14','LOT-LUX51-2',8),\r\n"
+	            + "('SKU-LUX-0051','2025-11-23','LOT-LUX51-3',9),\r\n"
+	            + "('SKU-LUX-0052','2025-11-07','LOT-LUX52-1',12),\r\n"
+	            + "('SKU-LUX-0052','2025-11-15','LOT-LUX52-2',9),\r\n"
+	            + "('SKU-LUX-0052','2025-11-24','LOT-LUX52-3',11),\r\n"
+	            + "('SKU-MUSIC-0047','2025-11-08','LOT-MUSIC47-1',50),\r\n"
+	            + "('SKU-MUSIC-0047','2025-11-16','LOT-MUSIC47-2',45),\r\n"
+	            + "('SKU-MUSIC-0047','2025-11-25','LOT-MUSIC47-3',48),\r\n"
+	            + "('SKU-MUSIC-0048','2025-11-09','LOT-MUSIC48-1',55),\r\n"
+	            + "('SKU-MUSIC-0048','2025-11-17','LOT-MUSIC48-2',50),\r\n"
+	            + "('SKU-MUSIC-0048','2025-11-26','LOT-MUSIC48-3',53),\r\n"
+	            + "('SKU-OFF-0041','2025-11-10','LOT-OFF41-1',70),\r\n"
+	            + "('SKU-OFF-0041','2025-11-18','LOT-OFF41-2',65),\r\n"
+	            + "('SKU-OFF-0041','2025-11-27','LOT-OFF41-3',68),\r\n"
+	            + "('SKU-OFF-0042','2025-11-11','LOT-OFF42-1',80),\r\n"
+	            + "('SKU-OFF-0042','2025-11-19','LOT-OFF42-2',75),\r\n"
+	            + "('SKU-OFF-0042','2025-11-28','LOT-OFF42-3',78),\r\n"
+	            + "('SKU-PET-0031','2025-11-12','LOT-PET31-1',90),\r\n"
+	            + "('SKU-PET-0031','2025-11-20','LOT-PET31-2',85),\r\n"
+	            + "('SKU-PET-0031','2025-11-29','LOT-PET31-3',88),\r\n"
+	            + "('SKU-PET-0032','2025-11-13','LOT-PET32-1',100),\r\n"
+	            + "('SKU-PET-0032','2025-11-21','LOT-PET32-2',95),\r\n"
+	            + "('SKU-PET-0032','2025-11-30','LOT-PET32-3',98),\r\n"
+	            + "('SKU-PHAR-0005','2025-11-14','LOT-PHAR5-1',120),\r\n"
+	            + "('SKU-PHAR-0005','2025-11-22','LOT-PHAR5-2',110),\r\n"
+	            + "('SKU-PHAR-0005','2025-12-01','LOT-PHAR5-3',115),\r\n"
+	            + "('SKU-PHAR-0006','2025-11-15','LOT-PHAR6-1',130),\r\n"
+	            + "('SKU-PHAR-0006','2025-11-23','LOT-PHAR6-2',115),\r\n"
+	            + "('SKU-PHAR-0006','2025-12-02','LOT-PHAR6-3',120),\r\n"
+	            + "('SKU-SPORT-0025','2025-11-16','LOT-SPORT25-1',75),\r\n"
+	            + "('SKU-SPORT-0025','2025-11-24','LOT-SPORT25-2',70),\r\n"
+	            + "('SKU-SPORT-0025','2025-12-03','LOT-SPORT25-3',72),\r\n"
+	            + "('SKU-SPORT-0026','2025-11-17','LOT-SPORT26-1',85),\r\n"
+	            + "('SKU-SPORT-0026','2025-11-25','LOT-SPORT26-2',80),\r\n"
+	            + "('SKU-SPORT-0026','2025-12-04','LOT-SPORT26-3',83),\r\n"
+	            + "('SKU-STAT-0035','2025-11-18','LOT-STAT35-1',60),\r\n"
+	            + "('SKU-STAT-0035','2025-11-26','LOT-STAT35-2',55),\r\n"
+	            + "('SKU-STAT-0035','2025-12-05','LOT-STAT35-3',58),\r\n"
+	            + "('SKU-STAT-0036','2025-11-19','LOT-STAT36-1',65),\r\n"
+	            + "('SKU-STAT-0036','2025-11-27','LOT-STAT36-2',60),\r\n"
+	            + "('SKU-STAT-0036','2025-12-06','LOT-STAT36-3',63),\r\n"
+	            + "('SKU-TLS-0011','2025-11-20','LOT-TLS11-1',40),\r\n"
+	            + "('SKU-TLS-0011','2025-11-28','LOT-TLS11-2',35),\r\n"
+	            + "('SKU-TLS-0011','2025-12-07','LOT-TLS11-3',38),\r\n"
+	            + "('SKU-TLS-0012','2025-11-21','LOT-TLS12-1',50),\r\n"
+	            + "('SKU-TLS-0012','2025-11-29','LOT-TLS12-2',45),\r\n"
+	            + "('SKU-TLS-0012','2025-12-08','LOT-TLS12-3',48),\r\n"
+	            + "('SKU-TOY-0021','2025-11-22','LOT-TOY21-1',90),\r\n"
+	            + "('SKU-TOY-0021','2025-11-30','LOT-TOY21-2',85),\r\n"
+	            + "('SKU-TOY-0021','2025-12-09','LOT-TOY21-3',88),\r\n"
+	            + "('SKU-TOY-0022','2025-11-23','LOT-TOY22-1',100),\r\n"
+	            + "('SKU-TOY-0022','2025-12-01','LOT-TOY22-2',95),\r\n"
+	            + "('SKU-TOY-0022','2025-12-10','LOT-TOY22-3',98)\r\n"
+	            + ";";
+
+	    try {
+	        stmt.execute(sql);
+	    } catch (SQLException e) {
+	        System.out.println("Seed insertion failed - warehouse_receipt");
+	        throw new SQLException(e);
+	    }
+	}
 	
 }
