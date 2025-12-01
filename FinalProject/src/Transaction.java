@@ -1,108 +1,85 @@
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 /**
  * Transaction class to represent transactions
  * 
  * @author white
  */
-public abstract class Transaction {
-	private LocalDateTime transactionTime;
-	private User initializingUser;
-	private int amountInCents;
-	private int taxes;
-	private ArrayList<InventoryItem> itemList = new ArrayList<InventoryItem>();
-	private Transaction previousReceipt = null;
-	/**
-	 * Construct Transaction Item
-	 */
-	public Transaction() {}
-	/**
-	 * Return initializing user
-	 */
-	public User getInitializingUser() {
-		return initializingUser;
+public class Transaction {
+	private int transaction_id;
+    private String item_name;
+    private int user_id;     
+    private String SKU;
+    private int quantity;
+    private int total_price;
+    private TaxBracket tax_bracket;
+    private LocalDateTime transaction_date;
+    
+    Transaction(int transaction_id,
+    		String item_name,
+    		int user_id,
+    		String SKU,
+    		int quantity,
+    		int price,
+    		TaxBracket tax_bracket,
+    		LocalDateTime transaction_date) {
+    	this.transaction_id = transaction_id;
+    	this.item_name = item_name;
+    	this.user_id = user_id;
+    	this.SKU = SKU;
+    	this.quantity = quantity;
+    	this.setTotal_price(price);
+    	this.tax_bracket = tax_bracket;
+    	this.transaction_date = transaction_date;
+    }
+    
+	public String getTotal_price() {
+		return String.format("$%.2f", (total_price / 100.0));
 	}
-	/**
-	 * Update initializing user
-	 * @param initializingUser User: User creating transaction
-	 */
-	public void setInitializingUser(User initializingUser) {
-		this.initializingUser = initializingUser;
+    
+	public int getTransaction_id() {
+		return transaction_id;
 	}
-	/**
-	 * Time of transaction
-	 * @return transactionTime LocalDateTime: Time of transaction
-	 */
-	public LocalDateTime getTransactionTime() {
-		return transactionTime;
+	public void setTransaction_id(int transaction_id) {
+		this.transaction_id = transaction_id;
 	}
-	
-	/**
-	 * Set transaction time
-	 * @param transactionTime LocalDateTime: Time of transaction
-	 */
-	public void setTransactionTime(LocalDateTime transactionTime) {
-		this.transactionTime = transactionTime;
+	public String getItem_name() {
+		return item_name;
 	}
-	/**
-	 * Get transaction taxes
-	 * @return taxes Integer: taxes in cents
-	 */
-	public int getTaxes() {
-		return taxes;
+	public void setItem_name(String item_name) {
+		this.item_name = item_name;
 	}
-	/**
-	 * Get transaction amount in Cents
-	 * @return amountInCents Integer: Transaction amount in cents
-	 */
-	public int getAmountInCents() {
-		return amountInCents;
+	public int getUser_id() {
+		return user_id;
 	}
-	/**
-	 * Calculate total taxes and amount for transaction
-	 */
-	public void calculateTotals() {
-		amountInCents = 0;
-		taxes = 0;
-		for (InventoryItem item : itemList) {
-			amountInCents += item.getPrice();
-			taxes += item.getTaxes();
-		}
+	public void setUser_id(int user_id) {
+		this.user_id = user_id;
 	}
-	/*
-	 * Set amount in cents for transaction
-	 */
-	public void setAmountInCents(int amountInCents) {
-		this.amountInCents = amountInCents;
+	public String getSKU() {
+		return SKU;
 	}
-	/**
-	 * Get all transaction items
-	 * @return itemList ArrayList<InventoryItem>: List of items in transaction
-	 */
-	public ArrayList<InventoryItem> getItemList() {
-		return itemList;
+	public void setSKU(String sKU) {
+		SKU = sKU;
 	}
-	/**
-	 * Add item to transaction
-	 * @param item InventoryItem: Item to add to transaction
-	 */
-	public void addItem(InventoryItem item) {
-		itemList.add(item);
-		this.calculateTotals();
+	public int getQuantity() {
+		return quantity;
 	}
-	/**
-	 * Previous receipt (if any)
-	 * @return previousReceipt Transaction: Previously associated receipt
-	 */
-	public Transaction getPreviousReceipt() {
-		return previousReceipt;
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
 	}
-	/**
-	 * Add an associated receipt
-	 * @param previousReceipt Transaction: Previously associated receipt
-	 */
-	public void setPreviousReceipt(Transaction previousReceipt) {
-		this.previousReceipt = previousReceipt;
+	public TaxBracket getTax_bracket() {
+		return tax_bracket;
+	}
+	public void setTax_bracket(TaxBracket tax_bracket) {
+		this.tax_bracket = tax_bracket;
+	}
+	public LocalDateTime getTransaction_date() {
+		return transaction_date;
+	}
+	public void setTransaction_date(LocalDateTime transaction_date) {
+		this.transaction_date = transaction_date;
+	}
+	public void setTotal_price(int total_price) {
+		this.total_price = total_price;
 	}
 }

@@ -25,6 +25,7 @@ public final class InputHandling {
         return cents.setScale(0, RoundingMode.UP).intValueExact();
 	}
 	
+	
 	/**
 	 * Checks if a string matches a float pattern
 	 * @param value String: value to check

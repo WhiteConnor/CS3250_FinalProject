@@ -330,6 +330,59 @@ public class DB {
 			throw e;
 		}
 	}
+	public ArrayList<Transaction> getTransactions() throws SQLException {
+		return getTransactions(500);
+	}
+	
+	public ArrayList<Transaction> getTransactions(int limit) throws SQLException {
+		ArrayList<Transaction> allItems = new ArrayList<Transaction>();
+		String sql = "SELECT transaction_id,\r\n"
+				+ "		i.item_name,\r\n"
+				+ "		t.user_id,\r\n"
+				+ "		t.SKU,\r\n"
+				+ "		quantity,\r\n"
+				+ "		quantity * i.price as total_price,\r\n"
+				+ "		i.tax_bracket,\r\n"
+				+ "		transaction_date FROM transactions t\r\n"
+				+ "INNER JOIN items i ON i.SKU = t.SKU\r\n"
+				+ "LIMIT ?;";
+		// GENERAL -- 7.25%
+		// FOOD -- 3.00%
+		// MEDICAL -- 0.00%
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+			pstmt.setInt(1,  limit);
+			
+			ResultSet results = pstmt.executeQuery();
+			while (results.next()) {
+				int price = results.getInt("total_price");
+				switch (results.getString("tax_bracket")) {
+				case "GENERAL":
+					price *= 1.725;
+					break;
+				case "FOOD":
+					price *= 1.300;
+				default:
+					price *= 1;
+				}
+					
+				allItems.add(new Transaction(
+						results.getInt("transaction_id"),
+					    results.getString("item_name"),                 
+					    results.getInt("user_id"),     
+					    results.getString("SKU"),
+					    results.getInt("quantity"),
+					    price,
+					    TaxBracket.valueOf(results.getString("tax_bracket")),
+					    results.getTimestamp("transaction_date").toLocalDateTime()
+					));
+			}
+			return allItems;
+		} catch (SQLException e) {
+			System.out.println("Query Failed - get transactions");
+			throw e;
+		}
+	}
 	
 	public ArrayList<InventoryItem> getItems() throws SQLException {
 		return getItems(50);

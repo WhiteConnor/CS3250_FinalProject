@@ -64,12 +64,13 @@ public class InventoryItem {
 	}
 	
 	/**
-	 * Get price of item in cents
-	 * @return price Integer: Price of item in cents
+	 * Get price of item formatted
+	 * @return price String: Price of item in cents
 	 */
-	public int getPrice() {
-		return price;
+	public String getPrice() {
+		return String.format("$%.2f", (price / 100.0));
 	}
+	
 	
 	/**
 	 * Set price of item in cents
@@ -95,7 +96,7 @@ public class InventoryItem {
 	 * @return taxes Integer: Tax value in cents
 	 */
 	public int getTaxes() {
-		return getTotalPrice() - getPrice();
+		return getTotalPrice() - price;
 	}
 	
 	/**
@@ -104,7 +105,7 @@ public class InventoryItem {
 	 * @return price Integer: Total price with taxes in cents
 	 */
 	public int getTotalPrice() {
-		return Math.round(getTaxRate() * getPrice());
+		return Math.round(getTaxRate() * price);
 	}
 	
 	/**

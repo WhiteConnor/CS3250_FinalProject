@@ -17,10 +17,9 @@ public class MenuBanner extends FlowPane {
 		/* File */
 		Menu fileMenu = new Menu("File");
 		MenuItem homeFile = new MenuItem("Home");
-		MenuItem settingsFile = new MenuItem("Settings");
 		MenuItem logoutFile = new MenuItem("Logout");
 		
-		fileMenu.getItems().addAll(homeFile, settingsFile, logoutFile);
+		fileMenu.getItems().addAll(homeFile, logoutFile);
 		
 		/* Inventory */
 		Menu inventoryMenu = new Menu("Inventory");
