@@ -5,7 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -307,6 +310,34 @@ public class DB {
 		}
 	}
 	
+	public void addTransaction(
+			int user_id,
+			String SKU,
+			String description,
+			int quantity
+			) throws SQLException {
+		String sql = "INSERT INTO transactions("
+				+ "user_id, SKU, description, quantity, transaction_date) "
+		           + "VALUES (?, ?, ?, ?, ?)";
+
+		try {
+			System.out.println("SKU: " + SKU);
+			System.out.println("Description: " + description);
+			System.out.println("Quantity: " + quantity);
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+			pstmt.setInt(1, user_id);
+		    pstmt.setString(2, SKU);
+		    pstmt.setString(3, description);
+		    pstmt.setInt(4, quantity);
+		    pstmt.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
+
+		    pstmt.executeUpdate();
+		} catch (SQLException e) {
+		    System.out.println("Transaction insertion failed");
+		    throw new SQLException(e);
+		}
+	}
+	
 	/**
 	 * Gets user item
 	 * @param username String: unique username
@@ -343,8 +374,10 @@ public class DB {
 				+ "		quantity,\r\n"
 				+ "		quantity * i.price as total_price,\r\n"
 				+ "		i.tax_bracket,\r\n"
+				+ "     t.description,\r\n"
 				+ "		transaction_date FROM transactions t\r\n"
 				+ "INNER JOIN items i ON i.SKU = t.SKU\r\n"
+				+ "ORDER BY transaction_id DESC\r\n"
 				+ "LIMIT ?;";
 		// GENERAL -- 7.25%
 		// FOOD -- 3.00%
@@ -374,12 +407,38 @@ public class DB {
 					    results.getInt("quantity"),
 					    price,
 					    TaxBracket.valueOf(results.getString("tax_bracket")),
-					    results.getTimestamp("transaction_date").toLocalDateTime()
+					    results.getTimestamp("transaction_date").toLocalDateTime(),
+					    results.getString("description")
 					));
 			}
 			return allItems;
 		} catch (SQLException e) {
 			System.out.println("Query Failed - get transactions");
+			throw e;
+		}
+	}
+	
+
+	
+	public int getItemQuantity(String SKU) throws SQLException {
+		String sql = "SELECT w.SKU, COALESCE((inventory - quantity), 0) AS total_quantity FROM (\r\n"
+				+ " 	SELECT SKU, sum(stockCount) AS inventory FROM warehouse_receipt GROUP BY SKU\r\n"
+				+ " 	) w join (\r\n"
+				+ " 	SELECT SKU, sum(quantity) AS quantity FROM transactions GROUP BY SKU\r\n"
+				+ " 	) q\r\n"
+				+ "	ON w.SKU = q.SKU"
+				+ "	WHERE w.SKU = ?";
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+			pstmt.setString(1,  SKU);
+			int quantity = 0;
+			
+			ResultSet results = pstmt.executeQuery();
+			while (results.next())
+					    quantity = results.getInt("total_quantity");
+			return quantity;
+		} catch (SQLException e) {
+			System.out.println("Query Failed - get quantity");
 			throw e;
 		}
 	}
@@ -395,7 +454,8 @@ public class DB {
 				+ "				description,\r\n"
 				+ "				weight_kg,\r\n"
 				+ "				price,\r\n"
-		        + "             COALESCE(SUM(w.stockCount), 0) AS inventory,\r\n"
+		        + "             stock_sum.inventory,\r\n"
+		        + " 			COALESCE((stock_sum.inventory - q.quantity), 0) AS total_quantity,\r\n"
 				+ "				tax_bracket,\r\n"
 				+ "				expiration_time,\r\n"
 				+ "				i.SKU,\r\n"
@@ -404,10 +464,18 @@ public class DB {
 				+ "				date_added,\r\n"
 				+ "				last_updated,\r\n"
 				+ "				min_temp,\r\n"
-				+ "				max_temp FROM items i\r\n"
-		        + "LEFT JOIN warehouse_receipt w ON i.SKU = w.SKU\r\n"
-		        + "GROUP BY i.SKU\r\n"
-				+ "LIMIT ?;";
+				+ "				max_temp\r\n"
+				+ "		FROM items i\r\n"
+				+ " 	LEFT JOIN (\r\n"
+				+ " 		SELECT SKU, COALESCE(sum(stockCount), 0) AS inventory FROM warehouse_receipt GROUP BY SKU\r\n"
+				+ " 	) stock_sum ON stock_sum.SKU = i.SKU"
+				+ "     LEFT JOIN (\r\n"
+				+ " 		SELECT SKU, COALESCE(sum(quantity), 0) AS quantity FROM transactions GROUP BY SKU\r\n"
+				+ " 	) q\r\n"
+				+ "		ON i.SKU = q.SKU\r\n"
+		        + "		LEFT JOIN warehouse_receipt w ON i.SKU = w.SKU\r\n"
+		        + "     GROUP BY i.SKU\r\n"
+				+ "		LIMIT ?;";
 		try {
 			PreparedStatement pstmt = connection.prepareStatement(sql);
 			pstmt.setInt(1,  limit);
@@ -420,60 +488,7 @@ public class DB {
 					    results.getString("description"),               
 					    results.getFloat("weight_kg"),                  
 					    results.getInt("price"),
-					    results.getInt("inventory"),
-					    TaxBracket.valueOf(results.getString("tax_bracket")),
-					    results.getInt("expiration_time"),              
-					    results.getString("SKU"),                       
-					    Category.valueOf(results.getString("category")),
-					    results.getInt("units_per_bin"),
-					    results.getTimestamp("date_added"),
-					    results.getTimestamp("last_updated"),
-					    results.getInt("min_temp"),						 
-					    results.getInt("max_temp")
-					));
-			return allItems;
-		} catch (SQLException e) {
-			System.out.println("Query Failed - get Item");
-			throw e;
-		}
-	}
-	
-	public ArrayList<InventoryItem> getItems(String searchTerm) throws SQLException {
-		ArrayList<InventoryItem> allItems = new ArrayList<InventoryItem>();
-		String sql = "SELECT item_name,\r\n"
-		        + "				description,\r\n"
-		        + "				weight_kg,\r\n"
-		        + "				price,\r\n"
-		        + "             COALESCE(SUM(w.stockCount), 0) AS inventory,\r\n"
-		        + "				tax_bracket,\r\n"
-		        + "				expiration_time,\r\n"
-		        + "				i.SKU,\r\n"
-		        + "				category,\r\n"
-		        + "				units_per_bin,\r\n"
-		        + "				date_added,\r\n"
-		        + "				last_updated,\r\n"
-		        + "				min_temp,\r\n"
-		        + "				max_temp\r\n"
-		        + "             user_id,\r\n"
-		        + "FROM items i\r\n"
-		        + "LEFT JOIN warehouse_receipt w ON i.SKU = w.SKU\r\n"
-		        + "WHERE item_name LIKE ?\r\n"
-		        + "GROUP BY i.SKU\r\n"
-		        + "LIMIT 50;";
-		//select SKU, sum(stockCount) as inventory from warehouse_receipt group by SKU;
-		try {
-			PreparedStatement pstmt = connection.prepareStatement(sql);
-			pstmt.setString(1, "%" + searchTerm + "%");
-			
-			ResultSet results = pstmt.executeQuery();
-			while (results.next())
-				allItems.add(new InventoryItem(
-					    results.getString("item_name"),                 
-					    results.getInt("user_id"),                      
-					    results.getString("description"),               
-					    results.getFloat("weight_kg"),                  
-					    results.getInt("price"),                        
-					    results.getInt("inventory"),
+					    results.getInt("total_quantity"),
 					    TaxBracket.valueOf(results.getString("tax_bracket")),
 					    results.getInt("expiration_time"),              
 					    results.getString("SKU"),                       
@@ -503,23 +518,32 @@ public class DB {
 	            .map(Category::name)
 	            .collect(Collectors.toCollection(ArrayList::new));
 	    
-	    StringBuilder sql = new StringBuilder("SELECT item_name,\n"
-	            + "             user_id,\n"
-	            + "             description,\n"
-	            + "             weight_kg,\n"
-	            + "             price,\n"
-		        + "             COALESCE(SUM(w.stockCount), 0) AS inventory,\r\n"
-	            + "             tax_bracket,\n"
-	            + "             expiration_time,\n"
-	            + "             i.SKU,\n"
-	            + "             category,\n"
-	            + "             units_per_bin,\n"
-	            + "             date_added,\n"
-	            + "             last_updated,\n"
-	            + "             min_temp,\n"
-	            + "             max_temp\n"
-	            + "FROM items i\n"
-		        + "LEFT JOIN warehouse_receipt w ON i.SKU = w.SKU\r\n"
+	    StringBuilder sql = new StringBuilder(
+	    		"	SELECT item_name,\r\n"
+				+ "             user_id,\r\n"
+				+ "				description,\r\n"
+				+ "				weight_kg,\r\n"
+				+ "				price,\r\n"
+		        + "             stock_sum.inventory,\r\n"
+		        + " 			COALESCE((stock_sum.inventory - q.quantity), 0) AS total_quantity,\r\n"
+				+ "				tax_bracket,\r\n"
+				+ "				expiration_time,\r\n"
+				+ "				i.SKU,\r\n"
+				+ "				category,\r\n"
+				+ "				units_per_bin,\r\n"
+				+ "				date_added,\r\n"
+				+ "				last_updated,\r\n"
+				+ "				min_temp,\r\n"
+				+ "				max_temp\r\n"
+				+ "		FROM items i\r\n"
+				+ " 	LEFT JOIN (\r\n"
+				+ " 		SELECT SKU, COALESCE(sum(stockCount), 0) AS inventory FROM warehouse_receipt GROUP BY SKU\r\n"
+				+ " 	) stock_sum ON stock_sum.SKU = i.SKU"
+				+ "     LEFT JOIN (\r\n"
+				+ " 		SELECT SKU, COALESCE(sum(quantity), 0) AS quantity FROM transactions GROUP BY SKU\r\n"
+				+ " 	) q\r\n"
+				+ "		ON i.SKU = q.SKU\r\n"
+		        + "		LEFT JOIN warehouse_receipt w ON i.SKU = w.SKU\r\n"
 	            + "WHERE 1=1");
 
 	    // Add search term filter if provided
@@ -586,7 +610,7 @@ public class DB {
 	                    results.getString("description"),
 	                    results.getFloat("weight_kg"),
 	                    results.getInt("price"),
-	                    results.getInt("inventory"),
+	                    results.getInt("total_quantity"),
 	                    TaxBracket.valueOf(results.getString("tax_bracket")),
 	                    results.getInt("expiration_time"),
 	                    results.getString("SKU"),
@@ -656,11 +680,13 @@ public class DB {
 	public int getLowInvCount() {
 		String sql = "SELECT COUNT(*) AS low_inventory_count\n"
 					+"FROM (\n"
-					+"    SELECT SKU,\n"
-					+"           COALESCE(SUM(stockCount), 0) AS inventory\n"
-					+"    FROM warehouse_receipt\n"
-					+"    GROUP BY SKU\n"
-					+"    HAVING inventory < 100\n"
+					+"    SELECT W.SKU, (inventory - quantity) AS total_quantity FROM (\r\n"
+					+ " 	SELECT SKU, sum(stockCount) AS inventory FROM warehouse_receipt GROUP BY SKU\r\n"
+					+ " 	) w join (\r\n"
+					+ " 	SELECT SKU, sum(quantity) AS quantity FROM transactions GROUP BY SKU\r\n"
+					+ " 	) q\r\n"
+					+ "		ON w.SKU = q.SKU"
+					+"    HAVING total_quantity < 100\n"
 					+") AS sub;";
 		int count = 0;
 		try {
@@ -673,5 +699,19 @@ public class DB {
 			return 0;
 		}
 		return count;
+	}
+	
+	public ArrayList<LocalDate, Integer> getSalesData(){
+		String sql = "SELECT DATE(transaction_date) as date, count(*) from transactions\r\n"
+				+ "group by DATE(transaction_date);";
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(sql);
+			ArrayList<LocalDate, Integer> = new ArrayList<>();
+			ResultSet results = pstmt.executeQuery();
+			while (results.next())
+					    count = results.getInt("total");
+		} catch (SQLException e) {
+			return 0;
+		}
 	}
 }

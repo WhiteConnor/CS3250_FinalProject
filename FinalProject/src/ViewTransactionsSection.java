@@ -17,7 +17,8 @@ public class ViewTransactionsSection extends StackPane {
 			"SKU",
 			"quantity",
 			"total_price",
-			"transaction_date"));
+			"transaction_date",
+			"description"));
 	
 	public ViewTransactionsSection(MainPage page) {
 		DB db = new DB();
@@ -37,7 +38,8 @@ public class ViewTransactionsSection extends StackPane {
         		"SKU",
         		"Quantity",
         		"Total Price",
-        		"Transaction Date"));
+        		"Transaction Date",
+        		"Description"));
         for (int i = 0; i < tableCols.size(); i++) {
             TableColumn<Transaction, Object> column = new TableColumn<>(tableCols.get(i));
             column.setCellValueFactory(new PropertyValueFactory<>(propertyNames.get(i)));

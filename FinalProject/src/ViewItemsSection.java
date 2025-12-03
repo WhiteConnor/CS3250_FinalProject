@@ -121,12 +121,11 @@ public class ViewItemsSection extends StackPane {
 		/* Search Bar */
 		HBox searchBar = new HBox();
 		
-		Label searchLbl = new Label("Search: ");
 		TextField titleTextTF = new TextField();
 		Button searchBtn = new Button("Search");
 		
 		
-		searchBar.getChildren().addAll(searchLbl,titleTextTF,searchBtn);
+		searchBar.getChildren().addAll(titleTextTF, searchBtn);
 		root.getChildren().add(searchBar);
 		
 		
@@ -175,9 +174,11 @@ public class ViewItemsSection extends StackPane {
         		if (tbGeneralCB.isSelected())taxBracketList.add("GENERAL");
         		
         		table.getItems().clear();
-//        		System.out.println("Max item limit: " + searchLimitTB.getText());
+        		String text = titleTextTF.getText();
+	        	if (text.equals(""))
+	        		text = "%";
 	        	ArrayList<InventoryItem> allItems = db.getItemsFiltered(
-	        			titleTextTF.getText(),
+	        			text,
 	        			selectedCategories,
 	        			taxBracketList,
 	        			lowInvCB.isSelected(),
@@ -190,13 +191,35 @@ public class ViewItemsSection extends StackPane {
 		});
         
         searchBtn.setOnAction(event -> {
+        	ArrayList<Category> selectedCategories = new ArrayList<>();
+        	
+        	categoryFP.getChildren().forEach(child -> {
+        		String text = ((CategoryButton) child).getText();
+        		System.out.println(text);
+        		Category category = Category.valueOf(text);
+        		selectedCategories.add(category);
+        	});
+        	
+        	if (selectedCategories.isEmpty())
+        		selectedCategories.addAll(List.of(Category.values()));
+        		
 	        try {
+	        	ArrayList<String> taxBracketList = new ArrayList<>();
+        		if (tbFoodCB.isSelected()) taxBracketList.add("FOOD");
+        		if (tbMedicalCB.isSelected())taxBracketList.add("MEDICAL");
+        		if (tbGeneralCB.isSelected())taxBracketList.add("GENERAL");
+        		
 	        	String text = titleTextTF.getText();
 	        	if (text.equals(""))
 	        		text = "%";
 	        	
         		table.getItems().clear();
-	        	ArrayList<InventoryItem> allItems = db.getItems(text);
+        		ArrayList<InventoryItem> allItems = db.getItemsFiltered(
+	        			titleTextTF.getText(),
+	        			selectedCategories,
+	        			taxBracketList,
+	        			lowInvCB.isSelected(),
+	        			Integer.parseInt(searchLimitTB.getText()));
 	        	for (InventoryItem item : allItems)
 	        		table.getItems().add(item);
 				System.out.println(allItems);

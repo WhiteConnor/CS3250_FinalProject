@@ -47,6 +47,13 @@ public class MenuBanner extends FlowPane {
 
 		getChildren().add(mainMenuBar);
 		
+		createTransaction.setOnAction(event -> {
+			System.out.println("Create Transactions Page");
+			CreateTransactionSection newSection = new CreateTransactionSection(page, user);
+			ScrollPane scrollPane = (ScrollPane) page.getCenter();
+			scrollPane.setContent(newSection);
+		});
+		
 		viewTransaction.setOnAction(event -> {
 			System.out.println("View Transactions Page");
 			ViewTransactionsSection newSection = new ViewTransactionsSection(page);

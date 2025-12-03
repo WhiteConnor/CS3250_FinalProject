@@ -14,6 +14,7 @@ public class Transaction {
     private int total_price;
     private TaxBracket tax_bracket;
     private LocalDateTime transaction_date;
+    private String description;
     
     Transaction(int transaction_id,
     		String item_name,
@@ -22,7 +23,8 @@ public class Transaction {
     		int quantity,
     		int price,
     		TaxBracket tax_bracket,
-    		LocalDateTime transaction_date) {
+    		LocalDateTime transaction_date,
+    		String description) {
     	this.transaction_id = transaction_id;
     	this.item_name = item_name;
     	this.user_id = user_id;
@@ -31,6 +33,7 @@ public class Transaction {
     	this.setTotal_price(price);
     	this.tax_bracket = tax_bracket;
     	this.transaction_date = transaction_date;
+    	this.description = description;
     }
     
 	public String getTotal_price() {
@@ -81,5 +84,13 @@ public class Transaction {
 	}
 	public void setTotal_price(int total_price) {
 		this.total_price = total_price;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }
