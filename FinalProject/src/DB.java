@@ -10,6 +10,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javafx.util.Pair;
@@ -577,7 +579,7 @@ public class DB {
 	    sql.append(" GROUP BY i.SKU");
 	    limit = limit > 0 ? limit : 100;
 	    
-	    sql.append(lowInv ? " HAVING inventory < 100" : "");
+	    sql.append(lowInv ? " HAVING total_quantity < 100" : "");
 	    sql.append(" LIMIT " + limit + ";");
 
 	    try {
@@ -701,27 +703,49 @@ public class DB {
 		return count;
 	}
 	
-	public ArrayList<Pair<java.util.Date, Integer>> getSalesData(){
-		String sql = "SELECT DATE(transaction_date) as date, count(*) as volume from transactions\r\n"
-				+ "group by DATE(transaction_date);";
-		
-		ArrayList<Pair<java.util.Date, Integer>> salesData = new ArrayList<>();
-		
-		try {
-			PreparedStatement pstmt = connection.prepareStatement(sql);
-			ResultSet results = pstmt.executeQuery();
-			int count = 0;
-			java.util.Date date = (java.util.Date) java.util.Date.from(Instant.now());
-			while (results.next()) {
-			    date = results.getDate("date");
-			    count = results.getInt("volume");
-			    salesData.add(new Pair<java.util.Date, Integer>(date, count));
-			}
-						
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Query getSalesData failed");
-		}
-		return salesData;
+	/**
+	 * used ai to fill date gaps, all original code was written by me
+	 * @return
+	 */
+	public ArrayList<Pair<java.util.Date, Integer>> getSalesData() {
+	    String sql = "SELECT DATE(transaction_date) as date, COUNT(*) as volume " +
+	                 "FROM transactions " +
+	                 "GROUP BY DATE(transaction_date);";
+
+	    ArrayList<Pair<java.util.Date, Integer>> salesData = new ArrayList<>();
+
+	    try {
+	        PreparedStatement pstmt = connection.prepareStatement(sql);
+	        ResultSet results = pstmt.executeQuery();
+
+	        // Step 1: Load query results into a map for quick lookup
+	        Map<java.sql.Date, Integer> dataMap = new HashMap<>();
+	        java.sql.Date minDate = null;
+	        while (results.next()) {
+	            java.sql.Date date = results.getDate("date");
+	            int count = results.getInt("volume");
+	            dataMap.put(date, count);
+
+	            if (minDate == null || date.before(minDate)) {
+	                minDate = date;
+	            }
+	        }
+
+	        // Step 2: Build continuous date range from minDate -> today
+	        LocalDate start = minDate.toLocalDate();
+	        LocalDate end = LocalDate.now();
+
+	        for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
+	            java.sql.Date sqlDate = java.sql.Date.valueOf(d);
+	            int count = dataMap.getOrDefault(sqlDate, 0);
+	            salesData.add(new Pair<>(sqlDate, count));
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        System.out.println("Query getSalesData failed");
+	    }
+
+	    return salesData;
 	}
 }

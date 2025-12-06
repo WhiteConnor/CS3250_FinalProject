@@ -3,7 +3,9 @@ import java.util.ArrayList;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 
@@ -13,10 +15,17 @@ import javafx.util.Pair;
 public class WelcomePage extends VBox {
 	public WelcomePage() {
 		DB db = new DB();
-		
-//		int count = db.getLowInvCount();
-//		Label lowInvLbl = new Label("There are " + count + " item(s) with low inventory!");
-//		getChildren().add(lowInvLbl);
+		int count = db.getLowInvCount();
+		if (count > 0) {
+			Alert quantityAlert = new Alert(AlertType.WARNING);
+			quantityAlert.setTitle("Low Inventory Alert");
+			quantityAlert.setHeaderText("There are " + count + " item(s) with inventory less than 100!");
+			quantityAlert.setContentText("Please order additional inventory.\n"
+					+ "Items may be viewed on inventory page\n"
+					+ "with low inventory filter.");
+			quantityAlert.show();
+		}
+
 		
 		ArrayList<Pair<java.util.Date, Integer>> salesData = db.getSalesData();
 		System.out.println(salesData);
