@@ -1,3 +1,4 @@
+import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 
@@ -7,16 +8,18 @@ import javafx.scene.layout.BorderPane;
  * @author white
  */
 public class MainPage extends BorderPane {
-	/**
-	 * MainPage constructor builds main page
-	 */
-	public MainPage() {
-		
-		LoginSection loginSection = new LoginSection(this);
-		ScrollPane scrollPane = new ScrollPane(loginSection);
-		scrollPane.setFitToWidth(true);
-		scrollPane.setFitToHeight(true);
+    private final ScrollPane centerScroll;
 
-		setCenter(scrollPane);
-	}
+    public MainPage() {
+        centerScroll = new ScrollPane();
+        centerScroll.setFitToWidth(true);
+        centerScroll.setFitToHeight(true);
+
+        setCenter(centerScroll);
+        setCenterContent(new LoginSection(this));
+    }
+
+    public void setCenterContent(Node content) {
+        centerScroll.setContent(content);
+    }
 }

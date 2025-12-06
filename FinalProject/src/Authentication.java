@@ -30,6 +30,7 @@ public class Authentication {
 	 * @throws SQLException 
 	 */
 	public Authentication(String username) throws SQLException {
+		System.out.println("Username: " + username);
 		this.username = username;
 		DB db = new DB();
 		try {

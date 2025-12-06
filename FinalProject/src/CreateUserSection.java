@@ -84,9 +84,7 @@ public class CreateUserSection extends VBox {
 		
 		cancelButton.setOnAction(event -> {
 			System.out.println("New user canceled");
-			LoginSection loginSection = new LoginSection(page);
-			loginSection.getStyleClass().add("loginSection");
-			page.setCenter(loginSection);
+			page.setCenterContent(new LoginSection(page));
 		});
 		
 		createNewButton.setOnAction(event -> {
@@ -148,9 +146,7 @@ public class CreateUserSection extends VBox {
 							sexComboBox.getValue(),
 							roleComboBox.getValue()
 							);
-					LoginSection loginSection = new LoginSection(page);
-					loginSection.getStyleClass().add("loginSection");
-					page.setCenter(loginSection);
+					page.setCenterContent(new LoginSection(page));
 				} else if (!usernameVerified) {
 					Label errorLabel = new Label("Username already in use!");
 					errorLabel.getStyleClass().add("error-label");	

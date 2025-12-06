@@ -42,13 +42,16 @@ public class LoginSection extends VBox {
 				DB db = new DB();
 				User user = db.getUser(usernameTextField.getText());
 				if (loginAccepted) {
+					System.out.println("Made it here");
 					MenuBanner menuBanner = new MenuBanner(page, user);
 					menuBanner.getStyleClass().add("menuBanner");
 					page.setTop(menuBanner);
+					System.out.println(page.getCenter());
 					ScrollPane scrollPane = (ScrollPane) page.getCenter();
 					scrollPane.setContent(new WelcomePage());
 				}
 			} catch (SQLException e) {
+				e.printStackTrace();
 				Boolean existingError[] = new Boolean[1];
 				existingError[0] = false;
 				getChildren().forEach(child -> {
@@ -73,6 +76,7 @@ public class LoginSection extends VBox {
 					getChildren().add(errorLabel);
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				Boolean existingError[] = new Boolean[1];
 				existingError[0] = false;
 				getChildren().forEach(child -> {
@@ -91,9 +95,7 @@ public class LoginSection extends VBox {
 		
 		createNewButton.setOnAction(event -> {
 			System.out.println("New user page request");
-			CreateUserSection createUserSection = new CreateUserSection(page);
-			createUserSection.getStyleClass().add("createUserSection");
-			page.setCenter(createUserSection);
+			page.setCenterContent(new CreateUserSection(page));
 		});
 	}
 }

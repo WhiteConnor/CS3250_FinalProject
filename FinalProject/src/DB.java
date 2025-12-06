@@ -701,17 +701,27 @@ public class DB {
 		return count;
 	}
 	
-	public ArrayList<LocalDate, Integer> getSalesData(){
-		String sql = "SELECT DATE(transaction_date) as date, count(*) from transactions\r\n"
+	public ArrayList<Pair<java.util.Date, Integer>> getSalesData(){
+		String sql = "SELECT DATE(transaction_date) as date, count(*) as volume from transactions\r\n"
 				+ "group by DATE(transaction_date);";
+		
+		ArrayList<Pair<java.util.Date, Integer>> salesData = new ArrayList<>();
+		
 		try {
 			PreparedStatement pstmt = connection.prepareStatement(sql);
-			ArrayList<LocalDate, Integer> = new ArrayList<>();
 			ResultSet results = pstmt.executeQuery();
-			while (results.next())
-					    count = results.getInt("total");
+			int count = 0;
+			java.util.Date date = (java.util.Date) java.util.Date.from(Instant.now());
+			while (results.next()) {
+			    date = results.getDate("date");
+			    count = results.getInt("volume");
+			    salesData.add(new Pair<java.util.Date, Integer>(date, count));
+			}
+						
 		} catch (SQLException e) {
-			return 0;
+			e.printStackTrace();
+			System.out.println("Query getSalesData failed");
 		}
+		return salesData;
 	}
 }
