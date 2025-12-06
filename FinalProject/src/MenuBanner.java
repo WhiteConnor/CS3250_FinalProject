@@ -85,7 +85,7 @@ public class MenuBanner extends FlowPane {
 		
 		receiptWare.setOnAction(event -> {
 			System.out.println("Transferring to warehouse receipt page");
-			WarehouseReceipt warehouseReceipt = new WarehouseReceipt();
+			WarehouseReceipt warehouseReceipt = new WarehouseReceipt(page);
 			ScrollPane scrollPane = (ScrollPane) page.getCenter();
 			scrollPane.setContent(warehouseReceipt);
 		});

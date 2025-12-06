@@ -1,10 +1,13 @@
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,7 +20,7 @@ import javafx.collections.*;
  * @author white
  */
 public class WarehouseReceipt extends VBox {
-	public WarehouseReceipt() {
+	public WarehouseReceipt(MainPage page) {
 		Label titleLabel = new Label("Warehouse Receipt");
 		DB db = new DB();
 		
@@ -64,6 +67,17 @@ public class WarehouseReceipt extends VBox {
 					lotCodeTextField.getText(),
 					Integer.parseInt(stockTextField.getText()) // TODO: Parse int here
 					);
+			
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Receipt Creation");
+			alert.setHeaderText("Receipt created successfully");
+			alert.setContentText("SKU: " + itemComboBox.getValue().getValue());
+
+			alert.showAndWait();
+			
+			WarehouseReceipt createTransactionPage = new WarehouseReceipt(page);
+			ScrollPane scrollPane = (ScrollPane) page.getCenter();
+			scrollPane.setContent(createTransactionPage);
 		});
 	}
 }

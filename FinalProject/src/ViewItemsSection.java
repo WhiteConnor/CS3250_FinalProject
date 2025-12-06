@@ -182,7 +182,7 @@ public class ViewItemsSection extends StackPane {
 	        			selectedCategories,
 	        			taxBracketList,
 	        			lowInvCB.isSelected(),
-	        			Integer.parseInt(searchLimitTB.getText()));
+	        			Integer.parseInt(searchLimitTB.getText().equals("") ? "0" : searchLimitTB.getText()));
 	        	for (InventoryItem item : allItems)
 	        		table.getItems().add(item);
         	} catch (Exception ex) {

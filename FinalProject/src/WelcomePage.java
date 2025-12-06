@@ -14,9 +14,9 @@ public class WelcomePage extends VBox {
 	public WelcomePage() {
 		DB db = new DB();
 		
-		int count = db.getLowInvCount();
-		Label lowInvLbl = new Label("There are " + count + " item(s) with low inventory!");
-		getChildren().add(lowInvLbl);
+//		int count = db.getLowInvCount();
+//		Label lowInvLbl = new Label("There are " + count + " item(s) with low inventory!");
+//		getChildren().add(lowInvLbl);
 		
 		ArrayList<Pair<java.util.Date, Integer>> salesData = db.getSalesData();
 		System.out.println(salesData);
