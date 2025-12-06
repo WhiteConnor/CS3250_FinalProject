@@ -49,6 +49,10 @@ public class LoginSection extends VBox {
 					System.out.println(page.getCenter());
 					ScrollPane scrollPane = (ScrollPane) page.getCenter();
 					scrollPane.setContent(new WelcomePage());
+				} else {
+					Label errorLabel = new Label("Incorrect username or password");
+					errorLabel.getStyleClass().add("error-label");
+					getChildren().add(errorLabel);
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
